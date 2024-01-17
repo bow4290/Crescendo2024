@@ -1,6 +1,6 @@
 package frc.robot.autos;
 
-import frc.robot.Constants;
+import frc.lib.swerve.SwerveConstants;
 import frc.robot.subsystems.Swerve;
 
 import java.util.List;
@@ -21,9 +21,9 @@ public class exampleAuto extends SequentialCommandGroup {
     public exampleAuto(Swerve s_Swerve){
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
+                    SwerveConstants.AutoConstants.kMaxSpeedMetersPerSecond,
+                    SwerveConstants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                .setKinematics(SwerveConstants.Swerve.swerveKinematics);
 
         // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory =
@@ -38,16 +38,16 @@ public class exampleAuto extends SequentialCommandGroup {
 
         var thetaController =
             new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+                SwerveConstants.AutoConstants.kPThetaController, 0, 0, SwerveConstants.AutoConstants.kThetaControllerConstraints);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,
                 s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+                SwerveConstants.Swerve.swerveKinematics,
+                new PIDController(SwerveConstants.AutoConstants.kPXController, 0, 0),
+                new PIDController(SwerveConstants.AutoConstants.kPYController, 0, 0),
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);
