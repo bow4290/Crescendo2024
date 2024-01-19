@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.lib.gamepad;
 
 import static edu.wpi.first.wpilibj.PS4Controller.Button.*;
 import static edu.wpi.first.wpilibj.XboxController.Button.*;
