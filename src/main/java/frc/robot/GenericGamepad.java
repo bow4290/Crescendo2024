@@ -45,8 +45,8 @@ public class GenericGamepad { // todo: rename to GenericGamepad after testing it
   /** Equivalent to R1 on PS4 */
   public Trigger rightBumper = button(kR1, kRightBumper, 6);
 
-  public Trigger leftJoystickPushed = button(kL3, kLeftStick, 11);
-  public Trigger rightJoystickPushed = button(kR3, kRightStick, 12);
+  public Trigger leftJoystick = button(kL3, kLeftStick, 11);
+  public Trigger rightJoystick = button(kR3, kRightStick, 12);
 
   /** Equivalent to Back on Xbox or Share on PS4 */
   public Trigger leftMiddle = button(kShare, kBack, 9);
