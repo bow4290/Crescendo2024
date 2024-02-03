@@ -15,11 +15,11 @@ public class Controls {
 
         // Swerve w/ Right Trigger as RobotCentric
         bot.swerve.setDefaultCommand(new TeleopSwerve(            
-        bot.swerve, 
-        () -> controller.leftY.getAsDouble(),
-        () -> controller.leftX.getAsDouble(),
-        () -> controller.rightX.getAsDouble(),
-        () -> controller.rightTriggerB.getAsBoolean()
+            bot.swerve, 
+            () -> controller.leftY.getAsDouble(),
+            () -> controller.leftX.getAsDouble(),
+            () -> controller.rightX.getAsDouble(),
+            () -> controller.rightTriggerB.getAsBoolean()
         ));
  
     }
