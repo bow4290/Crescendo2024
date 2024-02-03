@@ -11,7 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class SwerveConstants {
-    public static final double stickDeadband = 0.1;
+    public static final double stickDeadband = 0.5;
 
     public static final class Swerve {
         public static final int pigeonID = 1;
@@ -87,9 +87,9 @@ public final class SwerveConstants {
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
-        public static final class Mod0 { //TODO: This must be tuned to specific robot
-            public static final int driveMotorID = 1;
-            public static final int angleMotorID = 2;
+        public static final class Mod0 { // Swapped IDs with Mod0 because of wiring / build
+            public static final int driveMotorID = 3;
+            public static final int angleMotorID = 4;
             public static final int canCoderID = 1;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
             public static final SwerveModuleConstants constants = 
@@ -97,9 +97,9 @@ public final class SwerveConstants {
         }
 
         /* Front Right Module - Module 1 */
-        public static final class Mod1 { //TODO: This must be tuned to specific robot
-            public static final int driveMotorID = 3;
-            public static final int angleMotorID = 4;
+        public static final class Mod1 { // Swapped IDs with Mod0 because of wiring / build
+            public static final int driveMotorID = 1;
+            public static final int angleMotorID = 2;
             public static final int canCoderID = 2;
             public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
             public static final SwerveModuleConstants constants = 
