@@ -19,6 +19,7 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve swerve = new Swerve();
+    public final Intake intake = new Intake();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
