@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,17 +32,17 @@ public class Controls {
     public static void configureOperator(RobotContainer bot){
         GenericGamepad controller = bot.controllerOperator;
         //Intake Controls
-        Trigger intakeSpinController = controller.leftTriggerB;
-        double intakeSpeedController = controller.leftTrigger.getAsDouble();
-        boolean intakeDirectionController =  controller.leftBumper.getAsBoolean();
+        final Trigger intakeSpinController = controller.leftTriggerB;
+        final DoubleSupplier intakeSpeedController = controller.leftTrigger;
+        final BooleanSupplier intakeDirectionController =  controller.leftBumper;
 
         //Shooter Controls
-        Trigger shooterSpinController = controller.leftTriggerB;
-        double shooterSpeedController = controller.leftTrigger.getAsDouble();
-        boolean shooterDirectionController =  controller.leftBumper.getAsBoolean();
+        final Trigger shooterSpinController = controller.leftTriggerB;
+        final DoubleSupplier shooterSpeedController = controller.leftTrigger;
+        final BooleanSupplier shooterDirectionController =  controller.leftBumper;
 
-        intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController ? -1 : 1, intakeSpeedController));
-        shooterSpinController.whileTrue(bot.shooter.spinMotor(shooterDirectionController ? -1 : 1, shooterSpeedController));
+        intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController.getAsBoolean() ? -1 : 1, intakeSpeedController.getAsDouble()));
+        shooterSpinController.whileTrue(bot.shooter.spinMotor(shooterDirectionController.getAsBoolean() ? -1 : 1, shooterSpeedController.getAsDouble()));
         
     }
     
