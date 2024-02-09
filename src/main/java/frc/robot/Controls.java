@@ -27,11 +27,18 @@ public class Controls {
 
     public static void configureOperator(RobotContainer bot){
         GenericGamepad controller = bot.controllerOperator;
+        //Intake Controls
         final Trigger intakeSpinController = controller.leftTriggerB;
         final double intakeSpeedController = controller.leftTrigger.getAsDouble();
         final boolean intakeDirectionController =  controller.leftBumper.getAsBoolean();
 
+        //Shooter Controls
+        final Trigger shooterSpinController = controller.leftTriggerB;
+        final double shooterSpeedController = controller.leftTrigger.getAsDouble();
+        final boolean shooterDirectionController =  controller.leftBumper.getAsBoolean();
+
         intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController ? -1 : 1, intakeSpeedController));
+        shooterSpinController.whileTrue(bot.shooter.spinMotor(shooterDirectionController ? -1 : 1, shooterSpeedController));
         
     }
     

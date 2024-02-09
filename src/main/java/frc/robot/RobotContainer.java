@@ -20,6 +20,7 @@ public class RobotContainer {
     /* Subsystems */
     public final Swerve swerve = new Swerve();
     public final Intake intake = new Intake();
+    public final Shooter shooter = new Shooter();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
