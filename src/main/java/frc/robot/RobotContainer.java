@@ -28,6 +28,7 @@ public class RobotContainer {
 
         // Configure the button bindings
         Controls.configureDriver(this);
+        Controls.configureOperator(this);
     }
 
 

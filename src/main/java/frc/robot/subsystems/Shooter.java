@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 public class Shooter extends SubsystemBase{
-  public static final int SHOOTER_MOTOR_ID = 10;
+  public static final int SHOOTER_MOTOR_ID = 13;
 
   private TalonFX shooterMotor;
 
@@ -19,8 +19,12 @@ public class Shooter extends SubsystemBase{
     this.shooterMotor.stopMotor();  
   }
 
-  public Command spinMotor(int direction, double speed) {
-    return this.runEnd(() -> this.shooterMotor.set(speed * direction / ((direction < 0) ? 10 : 1)), () -> this.stopMotor());
+  public Command spinMotor(boolean direction, double speed) {
+    if (direction) {
+      return this.runEnd(() -> this.shooterMotor.set(speed * -1), () -> this.stopMotor());
+    } else {
+      return this.runEnd(() -> this.shooterMotor.set(speed), () -> this.stopMotor());
+    }
   }
 
   @Override

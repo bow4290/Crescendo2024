@@ -38,11 +38,11 @@ public class Controls {
 
         //Shooter Controls
         final Trigger shooterSpinController = controller.rightTriggerB;
-        final DoubleSupplier shooterSpeedController = controller.rightTrigger;
-        final BooleanSupplier shooterDirectionController =  controller.rightBumper;
+        final DoubleSupplier shooterSpeedController = () -> controller.rightTrigger.getAsDouble();
+        final Trigger shooterDirectionController =  controller.rightBumper;
 
         intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController.getAsBoolean() ? -1 : 1, intakeSpeedController.getAsDouble()));
-        shooterSpinController.whileTrue(bot.shooter.spinMotor(shooterDirectionController.getAsBoolean() ? -1 : 1, shooterSpeedController.getAsDouble()));
+        shooterSpinController.whileTrue(bot.shooter.spinMotor(controller.circle_b.getAsBoolean(), controller.rightTrigger.getAsDouble() /10));
         
     }
     
