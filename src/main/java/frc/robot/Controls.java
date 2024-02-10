@@ -41,8 +41,9 @@ public class Controls {
         final DoubleSupplier shooterSpeedController = () -> controller.rightTrigger.getAsDouble();
         final Trigger shooterDirectionController =  controller.rightBumper;
 
+        
         intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController.getAsBoolean() ? -1 : 1, intakeSpeedController.getAsDouble()));
-        shooterSpinController.whileTrue(bot.shooter.spinMotor(controller.circle_b.getAsBoolean(), controller.rightTrigger.getAsDouble() /10));
+        shooterSpinController.whileTrue(bot.shooter.setMotorSpeed(controller.rightTrigger.getAsDouble()).andThen(bot.shooter.spinMotor()));
         
     }
     
