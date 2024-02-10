@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command spinMotor(int direction, double speed) {
-    return this.runEnd(() -> {this.intakeMotor.set(speed * direction);}, () -> {this.stopMotor();});
+    return this.runEnd(() -> this.intakeMotor.set(speed * direction), () -> this.stopMotor());
   }
 
   @Override

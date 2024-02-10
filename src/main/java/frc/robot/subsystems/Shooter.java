@@ -10,6 +10,7 @@ public class Shooter extends SubsystemBase{
 
   private TalonFX shooterMotor;
 
+  
   public Shooter() {
     shooterMotor = new TalonFX(SHOOTER_MOTOR_ID);
   }
@@ -19,7 +20,7 @@ public class Shooter extends SubsystemBase{
   }
 
   public Command spinMotor(int direction, double speed) {
-    return this.runEnd(() -> {this.shooterMotor.set(speed * direction / ((direction < 0) ? 10 : 1));}, () -> {this.stopMotor();});
+    return this.runEnd(() -> this.shooterMotor.set(speed * direction / ((direction < 0) ? 10 : 1)), () -> this.stopMotor());
   }
 
   @Override
