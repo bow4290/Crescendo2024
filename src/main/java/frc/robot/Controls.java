@@ -43,7 +43,7 @@ public class Controls {
 
         
         intakeSpinController.whileTrue(bot.intake.spinMotor(intakeDirectionController.getAsBoolean() ? -1 : 1, intakeSpeedController.getAsDouble()));
-        shooterSpinController.whileTrue(bot.shooter.setMotorSpeed(controller.rightTrigger.getAsDouble()).andThen(bot.shooter.spinMotor()));
+        shooterSpinController.whileTrue(bot.shooter.spinMotor(controller.rightTrigger));
         
     }
     
