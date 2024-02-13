@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
+//he he he
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.lib.swerve.SwerveModule;
 
 public class Shooter extends SubsystemBase {
   // Subsystem Constants
@@ -23,20 +23,10 @@ public class Shooter extends SubsystemBase {
     SHOOTER_OUT_SPEED_TWO
   }
 
-  public double ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS speed) {
-    switch(speed){
-      case SHOOTER_OUT_SPEED_ONE:
-        return 1.0;
-      case SHOOTER_OUT_SPEED_TWO:
-        return 0.4;
-      default:
-        return 0.0;
-    }
-  }
-
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
 
+  //A command to move note from intake to indexer
   public Command cmdIndexIn(){
       return this.runEnd(
       () -> {
@@ -49,10 +39,13 @@ public class Shooter extends SubsystemBase {
       }
     );
   }
-
+  
+  //A command to move note from indexer to be shot
   public Command cmdShootOut() {
     return this.runEnd(
       () -> {
+        //Set speed of fly wheeeeeeels (yippee), then wait until they are sped up, 
+        //(1 second at the time of this comment), then set index to move note to be shot. 
         motorShooter.set(ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS.SHOOTER_OUT_SPEED_TWO));
         Commands.waitSeconds(1);
         motorIndexer.set(INDEXER_OUT_SPEED);
@@ -63,6 +56,19 @@ public class Shooter extends SubsystemBase {
       });
   }
 
+
+  //Takes a shooter speed enum and returns the double at which the speed should be set
+  private double ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS speed) {
+    switch(speed){
+      case SHOOTER_OUT_SPEED_ONE:
+        return 1.0;
+      case SHOOTER_OUT_SPEED_TWO:
+        return 0.4;
+      default:
+        return 0.0;
+    }
+  }
+
   @Override
   public void periodic(){
     SmartDashboard.putNumber("Shooter Speed", motorShooter.get());
@@ -70,3 +76,36 @@ public class Shooter extends SubsystemBase {
   }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//I see you've found me
