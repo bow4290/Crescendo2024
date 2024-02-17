@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+
 //he he he
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,13 +27,14 @@ public class Shooter extends SubsystemBase {
 
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
+  private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   //A command to move note from intake to indexer
   public Command cmdIndexIn(){
       return this.runEnd(
       () -> {
-        motorShooter.set(SHOOTER_IN_SPEED);
-        motorIndexer.set(INDEXER_IN_SPEED);
+        motorShooter.setControl(dutyCycleOut.withOutput(SHOOTER_IN_SPEED));
+        motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_IN_SPEED));
       }, 
       () -> {
         motorShooter.stopMotor();
@@ -46,9 +49,9 @@ public class Shooter extends SubsystemBase {
       () -> {
         //Set speed of fly wheeeeeeels (yippee), then wait until they are sped up, 
         //(1 second at the time of this comment), then set index to move note to be shot. 
-        motorShooter.set(ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS.SHOOTER_OUT_SPEED_TWO));
+        motorShooter.setControl(dutyCycleOut.withOutput(ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS.SHOOTER_OUT_SPEED_TWO)));
         Commands.waitSeconds(1);
-        motorIndexer.set(INDEXER_OUT_SPEED);
+        motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_OUT_SPEED));
       },
       () -> {
         motorShooter.stopMotor();

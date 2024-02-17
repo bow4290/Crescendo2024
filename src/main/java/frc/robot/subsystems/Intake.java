@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,12 +15,14 @@ public class Intake extends SubsystemBase {
   public static final double INTAKE_OUT_SPEED = 0.40; // TODO: adjust Intake out Speed to be more accurate
 
 
+
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
+  private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   public Command cmdIntakeIn(){
       return this.runEnd(
       () -> {
-        motorIntake.set(INTAKE_IN_SPEED);
+        motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_IN_SPEED));
       }, 
       () -> {
         motorIntake.stopMotor();
@@ -30,7 +33,7 @@ public class Intake extends SubsystemBase {
   public Command cmdIntakeOut(){
     return this.runEnd(
       () -> {
-        motorIntake.set(INTAKE_OUT_SPEED);
+        motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_OUT_SPEED));
       },
       () -> {
         motorIntake.stopMotor();
