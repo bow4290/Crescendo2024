@@ -41,4 +41,31 @@ public class Conversions {
         double wheelRotations = wheelMeters / circumference;
         return wheelRotations;
     }
+
+    public static double metersToNauticalMiles(double meters){
+        return meters / 1852;
+    }
+    
+    public static double nauticalMilesToMeters(double nauticalMiles){
+        return nauticalMiles * 1852;
+    }
+
+    /**
+     * Utility function meant ot convert degrees to rotations.
+     * @param degrees Input degrees. Value of type double.
+     * @return Rotations.
+     */
+    public static double degToRotations(double degrees){
+        return degrees / 360;
+    }
+
+    /**
+     * A utility function meant to convert degress to rotations, with a gear ratio included in the input.
+     * @param degrees Input degrees. Value of type double. 
+     * @param gearRatio Input gear ratio, in the form of the final value of it (ex. 4:2 would be 4/2). Value Of type double
+     * @return Rotations, with gear ratio math applied.
+     */
+    public static double degToRotationsGearRatio(double degrees, double gearRatio){
+        return (degrees / 360) * gearRatio;
+    }
 }
