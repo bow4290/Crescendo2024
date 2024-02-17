@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -59,7 +58,7 @@ public class WrivotStates extends SubsystemBase {
      * Each constant state has two parameters, pivotDegrees, and wristDegrees, both of which are double values for the intended angle. <br>
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
-    public enum BotAngleState {
+    public enum BotAngleState { // TODO: INPUT VALUES!! VERY IMPORTANT.
         STASH(0, 0),
         INTAKE(0, 0),
         SPEAKER(0, 0),
@@ -108,7 +107,24 @@ public class WrivotStates extends SubsystemBase {
     }
 
     /**
-     * A utility function meant to be used exclusively inside {@link WrivotStates}. Runs a closed-loop control request for the given motor.
+     * The main utility function for exclusive use inside {@link WrivotStates}, in commands. Sequences using goToDegree().
+     * 
+     * @apiNote Sequence order:  Wrist (Stash) -> Pivot (Target) -> Wrist (Target)
+     * 
+     * @param targetPivotDegrees Pivot target position (in degrees). Value of type double.
+     * @param targetWristDegrees Wrist target position (in degrees). Value of type double.
+     */
+    private void wrivotSequencer(double targetPivotDegrees, double targetWristDegrees){
+        // Make sure wrist is stashed before running anything else
+        goToDegree(motorWrist, BotAngleState.STASH.wristDegrees, GEAR_RATIO_WRIST);
+        // Pivot to Target
+        goToDegree(motorPivot1, targetPivotDegrees, GEAR_RATIO_PIVOT);
+        // Wrist to Target
+        goToDegree(motorWrist, targetWristDegrees, GEAR_RATIO_WRIST);
+    }
+
+    /**
+     * A utility function meant to be used exclusively inside {@link WrivotStates}, specifically inside the wrivotSequencer(). Runs a closed-loop control request for the given motor.
      * PID should be tuned in the motor before passing it.
      * 
      * @param talonMotor The motor to set the control. Value of type {@link TalonFX}.
