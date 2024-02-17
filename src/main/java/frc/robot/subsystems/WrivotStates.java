@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,9 +15,35 @@ public class WrivotStates extends SubsystemBase {
     // Other Declarations
     private TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
     private TalonFX motorPivot1 = new TalonFX(MOTOR_ID_PIVOT_1);
-    private TalonFX motorPivot2 = new TalonFX(MOTOR_ID_PIVOT_2);
+    private TalonFX motorPivot2 = new TalonFX(MOTOR_ID_PIVOT_2); // Follower of motorPivot1
 
     private BotAngleState currentState = BotAngleState.INTERMEDIATE;
+
+    public WrivotStates(){
+        motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
+
+        // - Pivot Configuration -
+        TalonFXConfiguration configurationPivot = new TalonFXConfiguration();
+
+        configurationPivot.Audio.BeepOnBoot = true;
+        
+        configurationPivot.Slot0.kP = 12; // TODO: tune pivot PID
+        configurationPivot.Slot0.kI = 0;
+        configurationPivot.Slot0.kD = 0.1;
+
+        motorPivot1.getConfigurator().apply(configurationPivot);
+
+        // - Wrist Configuration -
+        TalonFXConfiguration configurationWrist = new TalonFXConfiguration();
+
+        configurationWrist.Audio.BeepOnBoot = true;
+
+        configurationWrist.Slot0.kP = 12; // TODO: tune wrist PID
+        configurationWrist.Slot0.kI = 0;
+        configurationWrist.Slot0.kD = 0.1;
+
+        motorWrist.getConfigurator().apply(configurationWrist);
+    }
 
     /**
      * The enum used to manage state in the robot. 
@@ -70,7 +98,7 @@ public class WrivotStates extends SubsystemBase {
 
     }
 
-    
+
 
 
 }
