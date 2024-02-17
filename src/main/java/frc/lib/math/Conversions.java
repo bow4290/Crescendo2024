@@ -45,7 +45,7 @@ public class Conversions {
     public static double metersToNauticalMiles(double meters){
         return meters / 1852;
     }
-    
+
     public static double nauticalMilesToMeters(double nauticalMiles){
         return nauticalMiles * 1852;
     }
