@@ -5,23 +5,32 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.lib.math.Conversions;
 
 public class WrivotStates extends SubsystemBase {
     // - Subystem Constants -
-    public static final int MOTOR_ID_WRIST = 0;
+    public static final int MOTOR_ID_WRIST = 15;
     public static final int MOTOR_ID_PIVOT_1 = 13;
     public static final int MOTOR_ID_PIVOT_2 = 14;
+    public static final int ENCODER_ID_PIVOT = 0;
+    public static final int ENCODER_ID_WRIST = 1;
 
-    public static final double GEAR_RATIO_PIVOT = 128/1;
-    public static final double GEAR_RATIO_WRIST = 64/1; // TODO: find proper value of this from dylan 
+
+    public static final double GEAR_RATIO_PIVOT = 73/1;
+    public static final double GEAR_RATIO_WRIST = 32/1;
 
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
     private final TalonFX motorPivot1 = new TalonFX(MOTOR_ID_PIVOT_1);
     private final TalonFX motorPivot2 = new TalonFX(MOTOR_ID_PIVOT_2); // Follower of motorPivot1
+    private final DutyCycleEncoder encoderPivot = new DutyCycleEncoder(ENCODER_ID_PIVOT);
+    private final DutyCycleEncoder encoderWrist = new DutyCycleEncoder(ENCODER_ID_WRIST);
 
     final PositionVoltage requestPositionVoltage = new PositionVoltage(0).withSlot(0);
 
@@ -29,6 +38,11 @@ public class WrivotStates extends SubsystemBase {
 
     public WrivotStates(){
         motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
+
+        // Get the absolute encoder position on startup, and set the motors position to it. 
+        // maybe make this into getAbsolutePosition? I think its for how many turns, we dont need that.
+        motorPivot1.setPosition(encoderPivot.get() * GEAR_RATIO_PIVOT);
+        motorWrist.setPosition(encoderWrist.get() * GEAR_RATIO_WRIST);
 
         // - Pivot Configuration -
         TalonFXConfiguration configurationPivot = new TalonFXConfiguration();
@@ -58,8 +72,8 @@ public class WrivotStates extends SubsystemBase {
      * Each constant state has two parameters, pivotDegrees, and wristDegrees, both of which are double values for the intended angle. <br>
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
-    public enum BotAngleState { // TODO: INPUT VALUES!! VERY IMPORTANT.
-        STASH(0, 0),
+    public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
+        STASH(-10, 0),
         INTAKE(0, 0),
         SPEAKER(0, 0),
         AMP(0, 0),
@@ -116,7 +130,7 @@ public class WrivotStates extends SubsystemBase {
      */
     private void wrivotSequencer(double targetPivotDegrees, double targetWristDegrees){
         // Make sure wrist is stashed before running anything else
-        goToDegree(motorWrist, BotAngleState.STASH.wristDegrees, GEAR_RATIO_WRIST);
+        goToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST)
         // Pivot to Target
         goToDegree(motorPivot1, targetPivotDegrees, GEAR_RATIO_PIVOT);
         // Wrist to Target
