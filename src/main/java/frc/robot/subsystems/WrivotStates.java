@@ -4,6 +4,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -48,6 +50,11 @@ public class WrivotStates extends SubsystemBase {
         TalonFXConfiguration configurationPivot = new TalonFXConfiguration();
 
         configurationPivot.Audio.BeepOnBoot = true;
+
+        configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        configurationPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
         
         configurationPivot.Slot0.kP = 12; // TODO: tune pivot PID
         configurationPivot.Slot0.kI = 0;
@@ -59,6 +66,10 @@ public class WrivotStates extends SubsystemBase {
         TalonFXConfiguration configurationWrist = new TalonFXConfiguration();
 
         configurationWrist.Audio.BeepOnBoot = true;
+
+        configurationWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.8;
 
         configurationWrist.Slot0.kP = 12; // TODO: tune wrist PID
         configurationWrist.Slot0.kI = 0;
@@ -130,7 +141,7 @@ public class WrivotStates extends SubsystemBase {
      */
     private void wrivotSequencer(double targetPivotDegrees, double targetWristDegrees){
         // Make sure wrist is stashed before running anything else
-        goToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST)
+        goToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST);
         // Pivot to Target
         goToDegree(motorPivot1, targetPivotDegrees, GEAR_RATIO_PIVOT);
         // Wrist to Target
