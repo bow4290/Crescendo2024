@@ -36,7 +36,7 @@ public class WrivotStates extends SubsystemBase {
 
     final PositionVoltage requestPositionVoltage = new PositionVoltage(0).withSlot(0);
 
-    private BotAngleState currentState = BotAngleState.INTERMEDIATE;
+    public BotAngleState currentState = BotAngleState.INTERMEDIATE;
 
     public WrivotStates(){
         motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
