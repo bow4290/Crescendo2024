@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -30,8 +31,8 @@ public class Shooter extends SubsystemBase {
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   //A command to move note from intake to indexer
-  public Command cmdIndexIn(){
-      return this.runEnd(
+  public Command cmdIndexIn(WrivotStates requireWrivotStates){
+      StartEndCommand cmd = new StartEndCommand(
       () -> {
         motorShooter.setControl(dutyCycleOut.withOutput(SHOOTER_IN_SPEED));
         motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_IN_SPEED));
@@ -39,13 +40,14 @@ public class Shooter extends SubsystemBase {
       () -> {
         motorShooter.stopMotor();
         motorIndexer.stopMotor();
-      }
-    );
+      }, this, requireWrivotStates);
+
+      return cmd;
   }
   
   //A command to move note from indexer to be shot
-  public Command cmdShootOut() {
-    return this.runEnd(
+  public Command cmdShootOut(WrivotStates requireWrivotStates) {
+    StartEndCommand cmd = new StartEndCommand(
       () -> {
         //Set speed of fly wheeeeeeels (yippee), then wait until they are sped up, 
         //(1 second at the time of this comment), then set index to move note to be shot. 
@@ -56,7 +58,9 @@ public class Shooter extends SubsystemBase {
       () -> {
         motorShooter.stopMotor();
         motorIndexer.stopMotor();
-      });
+      }, this, requireWrivotStates);
+
+      return cmd;
   }
 
 
