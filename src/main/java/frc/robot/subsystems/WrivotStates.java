@@ -38,7 +38,7 @@ public class WrivotStates extends SubsystemBase {
 
     final PositionVoltage requestPositionVoltage = new PositionVoltage(0).withSlot(0);
 
-    public BotAngleState currentState = BotAngleState.INTERMEDIATE;
+    private BotAngleState currentState = BotAngleState.INTERMEDIATE;
 
     public WrivotStates(){
         motorPivot1.setInverted(true);
@@ -133,6 +133,10 @@ public class WrivotStates extends SubsystemBase {
 
     }
 
+    public BotAngleState getCurrentState(){
+      return currentState;
+    }
+
     /**
      * The main utility function for exclusive use inside {@link WrivotStates}, in commands. Sequences using goToDegree().
      * 
@@ -150,12 +154,6 @@ public class WrivotStates extends SubsystemBase {
         goToDegree(motorWrist, targetWristDegrees, GEAR_RATIO_WRIST);
     }
 
-    private double getEncoderWithOffset(double rawValue, double offsetValue){
-      double value = Math.floor(rawValue * 100) / 100;
-      
-      return value + offsetValue;
-    }
-
     /**
      * A utility function meant to be used exclusively inside {@link WrivotStates}, specifically inside the wrivotSequencer(). Runs a closed-loop control request for the given motor.
      * PID should be tuned in the motor before passing it.
@@ -169,13 +167,28 @@ public class WrivotStates extends SubsystemBase {
         talonMotor.setControl(requestPositionVoltage.withPosition(setPos));
     }
 
+    private double getEncoderWithOffset(double rawValue, double offsetValue){
+      double value = Math.floor(rawValue * 100) / 100;
+      
+      return value + offsetValue;
+    }
+
     @Override
     public void periodic(){
-      SmartDashboard.putNumber("(Raw) Pivot Encoder Pos", encoderPivot.getAbsolutePosition());
-      SmartDashboard.putNumber("(Raw) Wrist Encoder Pos", encoderWrist.getAbsolutePosition());
+
+      SmartDashboard.putNumber("Pivot Motor Speed", motorPivot1.get());
+      SmartDashboard.putNumber("Wrist Motor Speed", motorWrist.get());
       
       SmartDashboard.putNumber("Pivot Encoder Position", getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT));
       SmartDashboard.putNumber("Wrist Encoder Position", getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST));
+
+      SmartDashboard.putString("Current Robot State", getCurrentState().toString());
+
+      // Debug Values
+      SmartDashboard.putNumber("(Debug) Raw Pivot Encoder Pos", encoderPivot.getAbsolutePosition());
+      SmartDashboard.putNumber("(Debug) Raw Wrist Encoder Pos", encoderWrist.getAbsolutePosition());
+      SmartDashboard.putNumber("(Debug) Raw Pivot Motor 1 Pos", motorPivot1.getPosition().getValueAsDouble());
+      SmartDashboard.putNumber("(Debug) Raw Wrist Motor Pos", motorWrist.getPosition().getValueAsDouble());
     }
 
 
