@@ -28,9 +28,6 @@ public class Controls {
     public static void configureOperator(RobotContainer bot){
         GenericGamepad controller = bot.controllerOperator;
 
-        controller.dpadRight.onTrue(bot.wrivotStates.cmdGoToState(BotAngleState.STASH));
-        controller.dpadUp.onTrue(bot.wrivotStates.cmdGoToState(BotAngleState.SPEAKER));
-
     }
     
 }

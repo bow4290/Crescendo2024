@@ -134,51 +134,40 @@ public class WrivotStates extends SubsystemBase {
         }
 
     }
-    // start of non-enum code (checkpoint)
-
-    public Command cmdGoToState(BotAngleState setState){
-      return this.runOnce(() -> {
-        if (setState != BotAngleState.AIMING && setState != BotAngleState.INTERMEDIATE){
-          wrivotSequencer(setState.getPivotDegrees(), setState.getWristDegrees());
-        }
-      });
-    }
-
     public BotAngleState getCurrentState(){
       return currentState;
     }
 
-    /**
-     * The main utility function for exclusive use inside {@link WrivotStates}, in commands. Sequences using goToDegree().
-     * 
-     * @apiNote Sequence order:  Wrist (Stash) -> Pivot (Target) -> Wrist (Target)
-     * 
-     * @param targetPivotDegrees Pivot target position (in degrees). Value of type double.
-     * @param targetWristDegrees Wrist target position (in degrees). Value of type double.
-     */
-    private void wrivotSequencer(double targetPivotDegrees, double targetWristDegrees){
-        // Make sure wrist is stashed before running anything else
-        goToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST);
-        Commands.waitSeconds(2);
-        // Pivot to Target
-        goToDegree(motorPivot1, targetPivotDegrees, GEAR_RATIO_PIVOT);
-        Commands.waitSeconds(2);
-        // Wrist to Target
-        goToDegree(motorWrist, targetWristDegrees, GEAR_RATIO_WRIST);
+    // start of non-enum code (checkpoint)
+
+    public Command cmdWrivotSequencer(BotAngleState targetState){
+      double targetPivotDeg = targetState.getPivotDegrees();
+      double targetWristDeg = targetState.getWristDegrees();
+
+      return this.runOnce(() -> {
+        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST)
+        .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT))
+        .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST));
+      });
     }
 
-    /**
-     * A utility function meant to be used exclusively inside {@link WrivotStates}, specifically inside the wrivotSequencer(). Runs a closed-loop control request for the given motor.
-     * PID should be tuned in the motor before passing it.
-     * 
-     * @param talonMotor The motor to set the control. Value of type {@link TalonFX}.
-     * @param degrees The degrees to go to. Value of type double.
-     * @param gearRatio The gear ratio of the hardware to interact with. Value of type double.
-     */
-    private void goToDegree(TalonFX talonMotor, double degrees, double gearRatio){
-        double setPos = Conversions.degToRotationsGearRatio(degrees, gearRatio);
-        talonMotor.setControl(requestPositionVoltage.withPosition(setPos));
+    private Command cmdGoToDegree(TalonFX setMotor, double degrees, double gearRatio){
+      return this.startEnd(() -> {
+        double targetRotations = Conversions.degToRotationsGearRatio(degrees, gearRatio);
+        setMotor.setControl(requestPositionVoltage.withPosition(targetRotations));
+      }, () -> {
+        setMotor.stopMotor();
+      });
     }
+
+    private boolean isFinished(double targetRotations, double currentRotations){
+      if (targetRotations == currentRotations){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
 
     /**
      * Gets the encoder value with the offset AND clipped / corrected rotations.
