@@ -118,9 +118,9 @@ public class Swerve extends SubsystemBase {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
         for(SwerveModule mod : mSwerveMods){
-            SmartDashboard.putNumber(String.format("Swerve Mod: {} CANcoder", mod.moduleNumber), mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber(String.format("Swerve Mod: {} Angle", mod.moduleNumber), mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber(String.format("Swerve Mod: {} Velocity", mod.moduleNumber), mod.getState().speedMetersPerSecond);
+            SmartDashboard.putNumber(String.format("Swerve Mod: %d CANcoder", mod.moduleNumber), mod.getCANcoder().getDegrees());
+            SmartDashboard.putNumber(String.format("Swerve Mod: %d Angle", mod.moduleNumber), mod.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber(String.format("Swerve Mod: %d Velocity", mod.moduleNumber), mod.getState().speedMetersPerSecond);
         }
     }
 }

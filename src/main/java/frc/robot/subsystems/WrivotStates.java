@@ -9,6 +9,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.lib.math.Conversions;
@@ -22,7 +24,7 @@ public class WrivotStates extends SubsystemBase {
     public static final int ENCODER_ID_WRIST = 8;
 
     public static final double GEAR_RATIO_PIVOT = 72.96/1;
-    public static final double GEAR_RATIO_WRIST = 28.13/1;
+    public static final double GEAR_RATIO_WRIST = 18.75/1;
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
@@ -41,7 +43,7 @@ public class WrivotStates extends SubsystemBase {
     private BotAngleState currentState = BotAngleState.INTERMEDIATE;
 
     public WrivotStates(){
-        motorPivot1.setInverted(true);
+        motorPivot1.setInverted(false);
         motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
 
         // Get the absolute encoder position on startup, and set the motors position to it. 
@@ -58,7 +60,7 @@ public class WrivotStates extends SubsystemBase {
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
         
-        configurationPivot.Slot0.kP = 12; // TODO: tune pivot PID
+        configurationPivot.Slot0.kP = 0.25; // TODO: tune pivot PID
         configurationPivot.Slot0.kI = 0;
         configurationPivot.Slot0.kD = 0.1;
 
@@ -73,7 +75,7 @@ public class WrivotStates extends SubsystemBase {
 
         configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.8;
 
-        configurationWrist.Slot0.kP = 12; // TODO: tune wrist PID
+        configurationWrist.Slot0.kP = 0.5; // TODO: tune wrist PID
         configurationWrist.Slot0.kI = 0;
         configurationWrist.Slot0.kD = 0.1;
 
@@ -86,10 +88,10 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-7.5, 0),
+        STASH(-7.5, 10),
         INTAKE(-7.5, 140),
-        SPEAKER(30, 0),
-        AMP(65, 0),
+        SPEAKER(30, 2),
+        AMP(65, 2),
         AIMING(0, 0){
             @Override
             public double getPivotDegrees() {
@@ -134,12 +136,12 @@ public class WrivotStates extends SubsystemBase {
     }
     // start of non-enum code (checkpoint)
 
-    public Command goToStateCommand(BotAngleState setState){
-      return this.startEnd(() -> {
+    public Command cmdGoToState(BotAngleState setState){
+      return this.runOnce(() -> {
         if (setState != BotAngleState.AIMING && setState != BotAngleState.INTERMEDIATE){
           wrivotSequencer(setState.getPivotDegrees(), setState.getWristDegrees());
         }
-      }, () -> {});
+      });
     }
 
     public BotAngleState getCurrentState(){
@@ -157,8 +159,10 @@ public class WrivotStates extends SubsystemBase {
     private void wrivotSequencer(double targetPivotDegrees, double targetWristDegrees){
         // Make sure wrist is stashed before running anything else
         goToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST);
+        Commands.waitSeconds(2);
         // Pivot to Target
         goToDegree(motorPivot1, targetPivotDegrees, GEAR_RATIO_PIVOT);
+        Commands.waitSeconds(2);
         // Wrist to Target
         goToDegree(motorWrist, targetWristDegrees, GEAR_RATIO_WRIST);
     }

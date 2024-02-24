@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.GenericGamepad;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.WrivotStates.BotAngleState;
 
 public class Controls {
 
@@ -27,7 +28,8 @@ public class Controls {
     public static void configureOperator(RobotContainer bot){
         GenericGamepad controller = bot.controllerOperator;
 
-        controller.circle_b.whileTrue(bot.shooter.cmdShootOut(bot.wrivotStates));
+        controller.dpadRight.onTrue(bot.wrivotStates.cmdGoToState(BotAngleState.STASH));
+        controller.dpadUp.onTrue(bot.wrivotStates.cmdGoToState(BotAngleState.SPEAKER));
 
     }
     
