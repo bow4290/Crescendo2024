@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -9,11 +7,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.lib.math.Conversions;
@@ -46,6 +41,7 @@ public class WrivotStates extends SubsystemBase {
     public BotAngleState currentState = BotAngleState.INTERMEDIATE;
 
     public WrivotStates(){
+        motorPivot1.setInverted(true);
         motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
 
         // Get the absolute encoder position on startup, and set the motors position to it. 
@@ -58,7 +54,6 @@ public class WrivotStates extends SubsystemBase {
 
         configurationPivot.Audio.BeepOnBoot = true;
 
-        configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         configurationPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
