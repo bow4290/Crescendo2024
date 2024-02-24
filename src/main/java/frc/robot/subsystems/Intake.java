@@ -15,9 +15,8 @@ public class Intake extends SubsystemBase {
   public static final double INTAKE_IN_SPEED = 0.45; // TODO: adjust Intake in Speed to be more accurate
   public static final double INTAKE_OUT_SPEED = 0.40; // TODO: adjust Intake out Speed to be more accurate
 
-
-
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
+  
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   public Command cmdIntakeIn(WrivotStates requireWrivotStates){

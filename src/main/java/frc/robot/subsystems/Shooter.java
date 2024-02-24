@@ -11,23 +11,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.WrivotStates.BotAngleState;
 
 public class Shooter extends SubsystemBase {
   // Subsystem Constants
   public static final int MOTOR_ID_SHOOTER = 10;
   public static final int MOTOR_ID_INDEXER = 16;
 
-  public static final double SHOOTER_IN_SPEED = 0.45; // TODO: adjust Shooter in Speed to be more accurate
-  public static final double INDEXER_IN_SPEED = 0.45; // TODO: adjust Indexer in Speed to be more accurate
+  public static final double SHOOTER_IN_SPEED = 0.4; // TODO: adjust Shooter in Speed to be more accurate
+  public static final double INDEXER_IN_SPEED = 0.3; // TODO: adjust Indexer in Speed to be more accurate
 
-  public static final double INDEXER_OUT_SPEED = 0.4; // TODO: adjust Indexer out Speed to be more accurate
-  public static enum SHOOTER_OUT_SPEEDS { // TODO: adjust Shooter out Speed to be more accurate
-    SHOOTER_OUT_SPEED_ONE,
-    SHOOTER_OUT_SPEED_TWO
-  }
+  public static final double SHOOTER_OUT_SPEED = 0.5;
+  public static final double INDEXER_OUT_SPEED = 0.25; // TODO: adjust Indexer out Speed to be more accurate
 
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
+
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   //A command to move note from intake to indexer
@@ -47,11 +46,17 @@ public class Shooter extends SubsystemBase {
   
   //A command to move note from indexer to be shot
   public Command cmdShootOut(WrivotStates requireWrivotStates) {
+
+    // Guard clause to stop shooting out at intake position
+    if (requireWrivotStates.getCurrentState() == BotAngleState.INTAKE){
+      return this.startEnd(() -> {}, () -> {});
+    }
+
     StartEndCommand cmd = new StartEndCommand(
       () -> {
         //Set speed of fly wheeeeeeels (yippee), then wait until they are sped up, 
         //(1 second at the time of this comment), then set index to move note to be shot. 
-        motorShooter.setControl(dutyCycleOut.withOutput(ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS.SHOOTER_OUT_SPEED_TWO)));
+        motorShooter.setControl(dutyCycleOut.withOutput(SHOOTER_OUT_SPEED));
         Commands.waitSeconds(1);
         motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_OUT_SPEED));
       },
@@ -63,18 +68,6 @@ public class Shooter extends SubsystemBase {
       return cmd;
   }
 
-
-  //Takes a shooter speed enum and returns the double at which the speed should be set
-  private double ShooterEnumToDoubleSpeed(SHOOTER_OUT_SPEEDS speed) {
-    switch(speed){
-      case SHOOTER_OUT_SPEED_ONE:
-        return 1.0;
-      case SHOOTER_OUT_SPEED_TWO:
-        return 0.4;
-      default:
-        return 0.0;
-    }
-  }
 
   @Override
   public void periodic(){
