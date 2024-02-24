@@ -27,6 +27,8 @@ public class Controls {
     public static void configureOperator(RobotContainer bot){
         GenericGamepad controller = bot.controllerOperator;
 
+        controller.circle_b.whileTrue(bot.shooter.cmdShootOut(bot.wrivotStates));
+
     }
     
 }

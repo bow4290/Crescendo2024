@@ -26,8 +26,8 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = 0.946;
-    public static final double ENCODER_OFFSET_WRIST = 0.43;
+    public static final double ENCODER_OFFSET_PIVOT = -0.946;
+    public static final double ENCODER_OFFSET_WRIST = -0.43;
 
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
@@ -86,10 +86,10 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-10, 0),
-        INTAKE(0, 0),
-        SPEAKER(0, 0),
-        AMP(0, 0),
+        STASH(-7.5, 0),
+        INTAKE(-7.5, 140),
+        SPEAKER(30, 0),
+        AMP(65, 0),
         AIMING(0, 0){
             @Override
             public double getPivotDegrees() {
@@ -176,10 +176,26 @@ public class WrivotStates extends SubsystemBase {
         talonMotor.setControl(requestPositionVoltage.withPosition(setPos));
     }
 
+    /**
+     * Gets the encoder value with the offset AND clipped / corrected rotations.
+     * 
+     * @param rawValue Rotations before offset. Value of type double.
+     * @param offsetValue Rotations you apply offset. Value of type double.
+     * @return Rotations with offset applied as well as corrected clipping.
+     */
     private double getEncoderWithOffset(double rawValue, double offsetValue){
       double value = Math.floor(rawValue * 100) / 100;
       
-      return value + offsetValue;
+      return getCorrectedRotations(value + offsetValue);
+    }
+
+    private double getCorrectedRotations(double inputRotations){
+      double tempDegAngle = 360 * inputRotations;
+      if (tempDegAngle < -90){
+        return (360 + tempDegAngle) / 360;
+      } else {
+        return inputRotations;
+      }
     }
 
     @Override
