@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -22,15 +24,15 @@ public class WrivotStates extends SubsystemBase {
     public static final int MOTOR_ID_PIVOT_1 = 13;
     public static final int MOTOR_ID_PIVOT_2 = 14;
     public static final int ENCODER_ID_PIVOT = 0;
-    public static final int ENCODER_ID_WRIST = 1;
+    public static final int ENCODER_ID_WRIST = 8;
 
-    public static final double GEAR_RATIO_PIVOT = 73/1;
-    public static final double GEAR_RATIO_WRIST = 32/1;
+    public static final double GEAR_RATIO_PIVOT = 72.96/1;
+    public static final double GEAR_RATIO_WRIST = 28.13/1;
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = 0;
-    public static final double ENCODER_OFFSET_WRIST = 0;
+    public static final double ENCODER_OFFSET_PIVOT = 0.946;
+    public static final double ENCODER_OFFSET_WRIST = 0.43;
 
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
@@ -48,8 +50,8 @@ public class WrivotStates extends SubsystemBase {
 
         // Get the absolute encoder position on startup, and set the motors position to it. 
         // maybe make this into getAbsolutePosition? I think its for how many turns, we dont need that.
-        motorPivot1.setPosition((encoderPivot.getAbsolutePosition() + ENCODER_OFFSET_PIVOT) * GEAR_RATIO_PIVOT);
-        motorWrist.setPosition((encoderWrist.getAbsolutePosition() + ENCODER_OFFSET_WRIST) * GEAR_RATIO_WRIST);
+        motorPivot1.setPosition(getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT) * GEAR_RATIO_PIVOT);
+        motorWrist.setPosition(getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST) * GEAR_RATIO_WRIST);
 
         // - Pivot Configuration -
         TalonFXConfiguration configurationPivot = new TalonFXConfiguration();
@@ -153,6 +155,12 @@ public class WrivotStates extends SubsystemBase {
         goToDegree(motorWrist, targetWristDegrees, GEAR_RATIO_WRIST);
     }
 
+    private double getEncoderWithOffset(double rawValue, double offsetValue){
+      double value = Math.floor(rawValue * 100) / 100;
+      
+      return value + offsetValue;
+    }
+
     /**
      * A utility function meant to be used exclusively inside {@link WrivotStates}, specifically inside the wrivotSequencer(). Runs a closed-loop control request for the given motor.
      * PID should be tuned in the motor before passing it.
@@ -171,8 +179,8 @@ public class WrivotStates extends SubsystemBase {
       SmartDashboard.putNumber("(Raw) Pivot Encoder Pos", encoderPivot.getAbsolutePosition());
       SmartDashboard.putNumber("(Raw) Wrist Encoder Pos", encoderWrist.getAbsolutePosition());
       
-      SmartDashboard.putNumber("Pivot Encoder Position", (encoderPivot.getAbsolutePosition() + ENCODER_OFFSET_PIVOT));
-      SmartDashboard.putNumber("Wrist Encoder Position", (encoderWrist.getAbsolutePosition() + ENCODER_OFFSET_WRIST));
+      SmartDashboard.putNumber("Pivot Encoder Position", getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT));
+      SmartDashboard.putNumber("Wrist Encoder Position", getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST));
     }
 
 
