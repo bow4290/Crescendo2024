@@ -15,8 +15,8 @@ public class Vision {
   private static final double bottomOfSpeakerAprilTagDistanceToFloor = 51.875;
   private static final double speakerAprilTagHeight = 10;
   private static final double speakerAprilTagDistanceToFloor = bottomOfSpeakerAprilTagDistanceToFloor+(speakerAprilTagHeight/2);
-  //This is based off previously made variables
-  private static final double limelightAngleToArm = Math.atan(limelightArmDistance/limelightPivotDistance);
+  //TO-DO: Find values in degrees
+  private static final double limelightAngleToArm = 15;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
