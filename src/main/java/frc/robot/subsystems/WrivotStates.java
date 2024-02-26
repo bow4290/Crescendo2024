@@ -31,6 +31,8 @@ public class WrivotStates extends SubsystemBase {
     public static final double ENCODER_OFFSET_PIVOT = -0.946;
     public static final double ENCODER_OFFSET_WRIST = -0.43;
 
+    public static final double TOLERANCE = 0.01; 
+
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
     private final TalonFX motorPivot1 = new TalonFX(MOTOR_ID_PIVOT_1);
@@ -145,9 +147,9 @@ public class WrivotStates extends SubsystemBase {
       double targetWristDeg = targetState.getWristDegrees();
 
       return this.runOnce(() -> {
-        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST)
-        .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT))
-        .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST));
+        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(targetState))
+        .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
+        .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState));
       });
     }
 
@@ -155,17 +157,7 @@ public class WrivotStates extends SubsystemBase {
       return this.startEnd(() -> {
         double targetRotations = Conversions.degToRotationsGearRatio(degrees, gearRatio);
         setMotor.setControl(requestPositionVoltage.withPosition(targetRotations));
-      }, () -> {
-        setMotor.stopMotor();
-      });
-    }
-
-    private boolean isFinished(double targetRotations, double currentRotations){
-      if (targetRotations == currentRotations){
-        return true;
-      } else {
-        return false;
-      }
+      }, () -> {});
     }
 
 
@@ -190,6 +182,31 @@ public class WrivotStates extends SubsystemBase {
         return inputRotations;
       }
     }
+
+    private boolean isPivotFinished(BotAngleState targetState){
+      boolean returnValue;
+
+      if (Math.abs(targetState.getPivotDegrees() - motorPivot1.getPosition().getValueAsDouble()) <= TOLERANCE){
+        returnValue = true;
+      }else{
+        returnValue = false;
+      }
+
+      return returnValue;
+    }
+
+    private boolean isWristFinished(BotAngleState targetState){
+      boolean returnValue;
+
+      if (Math.abs(targetState.getWristDegrees() - motorWrist.getPosition().getValueAsDouble()) <= TOLERANCE){
+        returnValue = true;
+      }else{
+        returnValue = false;
+      }
+
+      return returnValue;
+    }
+
 
     @Override
     public void periodic(){
