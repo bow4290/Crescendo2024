@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -43,9 +44,8 @@ public class WrivotStates extends SubsystemBase {
     final PositionVoltage requestPositionVoltage = new PositionVoltage(0).withSlot(0);
 
     private BotAngleState currentState = BotAngleState.INTERMEDIATE;
-
+    
     public WrivotStates(){
-        motorPivot1.setInverted(false);
         motorPivot2.setControl(new Follower(MOTOR_ID_PIVOT_1, false));
 
         // Get the absolute encoder position on startup, and set the motors position to it. 
@@ -59,6 +59,7 @@ public class WrivotStates extends SubsystemBase {
         configurationPivot.Audio.BeepOnBoot = true;
 
         configurationPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
         
@@ -67,6 +68,7 @@ public class WrivotStates extends SubsystemBase {
         configurationPivot.Slot0.kD = 0.1;
 
         motorPivot1.getConfigurator().apply(configurationPivot);
+        motorPivot2.getConfigurator().apply(configurationPivot);
 
         // - Wrist Configuration -
         TalonFXConfiguration configurationWrist = new TalonFXConfiguration();
@@ -146,17 +148,17 @@ public class WrivotStates extends SubsystemBase {
       double targetPivotDeg = targetState.getPivotDegrees();
       double targetWristDeg = targetState.getWristDegrees();
 
-      return this.runOnce(() -> {
+      return 
         cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(targetState))
         .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
         .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState));
-      });
     }
 
     private Command cmdGoToDegree(TalonFX setMotor, double degrees, double gearRatio){
       return this.startEnd(() -> {
         double targetRotations = Conversions.degToRotationsGearRatio(degrees, gearRatio);
         setMotor.setControl(requestPositionVoltage.withPosition(targetRotations));
+        System.err.println("here we are cmdGoToDegree");
       }, () -> {});
     }
 
@@ -184,10 +186,12 @@ public class WrivotStates extends SubsystemBase {
     }
 
     private boolean isPivotFinished(BotAngleState targetState){
+      double targetRotations = Conversions.degToRotations(targetState.getPivotDegrees());
       boolean returnValue;
 
-      if (Math.abs(targetState.getPivotDegrees() - motorPivot1.getPosition().getValueAsDouble()) <= TOLERANCE){
+      if (Math.abs(targetRotations - getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT)) <= TOLERANCE){
         returnValue = true;
+        System.err.println("Err Pivot");
       }else{
         returnValue = false;
       }
@@ -196,10 +200,12 @@ public class WrivotStates extends SubsystemBase {
     }
 
     private boolean isWristFinished(BotAngleState targetState){
+      double targetRotations = Conversions.degToRotations(targetState.getWristDegrees());
       boolean returnValue;
 
-      if (Math.abs(targetState.getWristDegrees() - motorWrist.getPosition().getValueAsDouble()) <= TOLERANCE){
+      if (Math.abs(targetRotations - getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST)) <= TOLERANCE){
         returnValue = true;
+        System.err.println("Err wrist");
       }else{
         returnValue = false;
       }
@@ -225,6 +231,8 @@ public class WrivotStates extends SubsystemBase {
       SmartDashboard.putNumber("(Debug) Raw Pivot Motor 1 Pos", motorPivot1.getPosition().getValueAsDouble());
       SmartDashboard.putNumber("(Debug) Raw Wrist Motor Pos", motorWrist.getPosition().getValueAsDouble());
     }
+
+    
 
 
 
