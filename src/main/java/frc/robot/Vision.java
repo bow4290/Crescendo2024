@@ -21,13 +21,12 @@ public class Vision {
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
   public double getLimelightAngleToTag(double pivotAngle) {
-    return limelightAngleToArm + pivotAngle;
+    NetworkTableEntry ty = table.getEntry("ty");
+    double verticalTargetOffsetAngle = ty.getDouble(0.0);
+    return limelightAngleToArm + pivotAngle + verticalTargetOffsetAngle;
   }
 
   public double getLimelightDistanceToTag(double pivotAngle) {
-    NetworkTableEntry ty = table.getEntry("ty");
-    double verticalTargetOffsetAngle = ty.getDouble(0.0);
-
     double limelightYDistanceToPivot = Math.sin(pivotAngle)*limelightPivotDistance;
     double limeLightFloorDistance = limelightYDistanceToPivot+pivotFloorDistance;
 
