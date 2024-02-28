@@ -20,17 +20,27 @@ public class Vision {
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-  public double getLimelightAngleToTag(double pivotAngle) {
+  public double getLimelightXAngleFromFloor(double pivotAngle) {
     NetworkTableEntry ty = table.getEntry("ty");
     double verticalTargetOffsetAngle = ty.getDouble(0.0);
     return limelightAngleToArm + pivotAngle + verticalTargetOffsetAngle;
+  }
+
+  public double getLimelightXAngleToTag(){
+    NetworkTableEntry ty = table.getEntry("ty");
+    return ty.getDouble(0.0);
+  }
+  
+  public double getLimelightYAngleToTag(){
+    NetworkTableEntry tx = table.getEntry("tx");
+    return tx.getDouble(0.0);
   }
 
   public double getLimelightDistanceToTag(double pivotAngle) {
     double limelightYDistanceToPivot = Math.sin(pivotAngle)*limelightPivotDistance;
     double limeLightFloorDistance = limelightYDistanceToPivot+pivotFloorDistance;
 
-    double angleToGoalDegrees = getLimelightAngleToTag(pivotAngle);
+    double angleToGoalDegrees = getLimelightXAngleFromFloor(pivotAngle);
     double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
     double limelightDistanceToGoal = (speakerAprilTagDistanceToFloor - limeLightFloorDistance) / Math.tan(angleToGoalRadians);
     return limelightDistanceToGoal;
