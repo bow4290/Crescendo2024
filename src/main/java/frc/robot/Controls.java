@@ -36,8 +36,12 @@ public class Controls {
   // Dpad Down - State Intake
   // Dpad Left - State Amp
   // Dpad Up - State Shoot
+  // Cross / A - Cancel Wrivot Action
   public static void configureOperator(RobotContainer bot){
     GenericGamepad controller = bot.controllerOperator;
+
+    // Cancel Wrivot Action
+    controller.cross_a.onTrue(Commands.runOnce(() -> bot.wrivotStates.endMotorRequests()));
 
     // Go to state: stash
     controller.dpadRight.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.STASH)

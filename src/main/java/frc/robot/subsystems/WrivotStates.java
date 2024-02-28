@@ -213,6 +213,11 @@ public class WrivotStates extends SubsystemBase {
       return returnValue;
     }
 
+    public void endMotorRequests(){
+      motorPivot1.stopMotor();
+      motorPivot2.stopMotor();
+      motorWrist.stopMotor();
+    }
 
     @Override
     public void periodic(){
@@ -231,10 +236,5 @@ public class WrivotStates extends SubsystemBase {
       SmartDashboard.putNumber("(Debug) Raw Pivot Motor 1 Pos", motorPivot1.getPosition().getValueAsDouble());
       SmartDashboard.putNumber("(Debug) Raw Wrist Motor Pos", motorWrist.getPosition().getValueAsDouble());
     }
-
     
-
-
-
-
 }
