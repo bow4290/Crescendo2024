@@ -4,7 +4,9 @@ package frc.robot.subsystems;
 //he he he
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +31,19 @@ public class Shooter extends SubsystemBase {
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
 
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
+
+final VelocityVoltage VelocityOut = new VelocityVoltage(0).withSlot(0);
+
+public Shooter(){
+  TalonFXConfiguration configurationShooter = new TalonFXConfiguration();
+  configurationShooter.Slot0.kS = 0.05;
+  configurationShooter.Slot0.kV = 0.12;
+  configurationShooter.Slot0.kP = 0.11;
+  configurationShooter.Slot0.kI = 0.0;
+  configurationShooter.Slot0.kD = 0.0;
+
+  motorShooter.getConfigurator().apply(configurationShooter);
+}
 
   public Command cmdShootOut(WrivotStates requireWrivotStates){
     return Commands.parallel(
@@ -57,7 +72,7 @@ public class Shooter extends SubsystemBase {
   private Command cmdRunShooter(double targetSpeed){
     return this.startEnd(
     () -> {
-      motorShooter.setControl(dutyCycleOut.withOutput(targetSpeed));
+      motorShooter.setControl(VelocityOut.withVelocity(targetSpeed));
     },
     () -> {
       motorShooter.stopMotor();
