@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.WrivotStates.BotAngleState;
@@ -29,43 +30,38 @@ public class Shooter extends SubsystemBase {
 
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
-  //A command to move note from intake to indexer
-  public Command cmdIndexIn(WrivotStates requireWrivotStates){
-      StartEndCommand cmd = new StartEndCommand(
-      () -> {
-        motorShooter.setControl(dutyCycleOut.withOutput(SHOOTER_IN_SPEED));
-        motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_IN_SPEED));
-      }, 
-      () -> {
-        motorShooter.stopMotor();
-        motorIndexer.stopMotor();
-      }, this, requireWrivotStates);
-
-      return cmd;
+  public Command cmdShootOut(WrivotStates requireWrivotStates){
+    return Commands.parallel(
+      cmdRunShooter(SHOOTER_OUT_SPEED),
+      cmdRunIndexer(INDEXER_OUT_SPEED)
+    );
   }
-  
-  //A command to move note from indexer to be shot
-  public Command cmdShootOut(WrivotStates requireWrivotStates) {
 
-    // Guard clause to stop shooting out at intake position
-    if (requireWrivotStates.getCurrentState() == BotAngleState.INTAKE){
-      return this.startEnd(() -> {}, () -> {});
-    }
+  public Command cmdShooterIntake(){
+    return Commands.parallel(
+      cmdRunShooter(SHOOTER_IN_SPEED),
+      cmdRunIndexer(INDEXER_IN_SPEED)
+    );
+  }
 
-    StartEndCommand cmd = new StartEndCommand(
-      () -> {
-        //Set speed of fly wheeeeeeels (yippee), then wait until they are sped up, 
-        //(1 second at the time of this comment), then set index to move note to be shot. 
-        motorShooter.setControl(dutyCycleOut.withOutput(SHOOTER_OUT_SPEED));
-        Commands.waitSeconds(1);
-        motorIndexer.setControl(dutyCycleOut.withOutput(INDEXER_OUT_SPEED));
-      },
-      () -> {
-        motorShooter.stopMotor();
-        motorIndexer.stopMotor();
-      }, this, requireWrivotStates);
+  private Command cmdRunIndexer(double targetSpeed){
+    return this.runEnd(
+    () -> {
+      motorIndexer.setControl(dutyCycleOut.withOutput(targetSpeed));
+    },
+    () -> {
+      motorIndexer.stopMotor();
+    });
+  }
 
-      return cmd;
+  private Command cmdRunShooter(double targetSpeed){
+    return this.startEnd(
+    () -> {
+      motorShooter.setControl(dutyCycleOut.withOutput(targetSpeed));
+    },
+    () -> {
+      motorShooter.stopMotor();
+    });
   }
 
 
