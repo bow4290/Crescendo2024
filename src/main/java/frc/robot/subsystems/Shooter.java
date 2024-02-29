@@ -11,11 +11,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
-import frc.robot.subsystems.WrivotStates.BotAngleState;
 
 public class Shooter extends SubsystemBase {
   // Subsystem Constants
@@ -48,20 +45,24 @@ public Shooter(){
   motorShooter.getConfigurator().apply(configurationShooter);
 }
 
-  public Command cmdShootOut(WrivotStates requireWrivotStates){
-    return Commands.parallel(
-      cmdRunShooter(SHOOTER_OUT_RPM),
-      cmdRunIndexer(INDEXER_OUT_SPEED).beforeStarting(Commands.run(() -> {}).until(() -> isShooterSpeed()))
-    );
+  // - Public Commands -
+  public Command cmdShootOut(){
+    return Commands.sequence(
+      cmdStartShooter(SHOOTER_OUT_RPM),
+      Commands.waitUntil(() -> isShooterSpeed(SHOOTER_OUT_RPM)),
+      cmdRunIndexer(INDEXER_OUT_SPEED)
+    ).handleInterrupt(this::cmdStopShooter);
   }
 
   public Command cmdShooterIntake(){
-    return Commands.parallel(
-      cmdRunShooter(SHOOTER_IN_RPM),
+    return Commands.sequence(
+      cmdStartShooter(SHOOTER_IN_RPM),
       cmdRunIndexer(INDEXER_IN_SPEED)
-    );
+    ).handleInterrupt(this::cmdStopShooter);
   }
 
+
+  // - Internal Commands -
   private Command cmdRunIndexer(double targetSpeed){
     return this.runEnd(
     () -> {
@@ -72,20 +73,23 @@ public Shooter(){
     });
   }
 
-  private Command cmdRunShooter(double targetRPM){
+  private Command cmdStartShooter(double targetRPM){
     double targetRPS = Conversions.rpmToRpsGearRatio(targetRPM, GEAR_RATIO_SHOOTER);
 
-    return this.startEnd(
+    return this.runOnce(
     () -> {
       motorShooter.setControl(VelocityOut.withVelocity(targetRPS));
-    },
-    () -> {
+    });
+  }
+
+  private Command cmdStopShooter(){
+    return this.runOnce(() -> {
       motorShooter.stopMotor();
     });
   }
 
-  public boolean isShooterSpeed(){
-    double targetVelocity = SHOOTER_OUT_RPM * GEAR_RATIO_SHOOTER;
+  public boolean isShooterSpeed(double targetRPM){
+    double targetVelocity = targetRPM * GEAR_RATIO_SHOOTER;
     if (Math.abs(motorShooter.getVelocity().getValueAsDouble() - targetVelocity) <= 8){
       return true;
     }else {
