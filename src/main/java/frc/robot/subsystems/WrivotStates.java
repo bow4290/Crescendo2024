@@ -29,7 +29,7 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = -0.946;
+    public static final double ENCODER_OFFSET_PIVOT = -0.105;
     public static final double ENCODER_OFFSET_WRIST = -0.43;
 
     public static final double TOLERANCE = 0.01; 

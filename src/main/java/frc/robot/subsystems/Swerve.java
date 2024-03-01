@@ -122,5 +122,7 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber(String.format("Swerve Mod: %d Angle", mod.moduleNumber), mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber(String.format("Swerve Mod: %d Velocity", mod.moduleNumber), mod.getState().speedMetersPerSecond);
         }
+
+        SmartDashboard.putNumber("Gyro", gyro.getYaw().getValueAsDouble());
     }
 }
