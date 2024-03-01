@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.Exception;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -29,8 +31,13 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = -0.946;
+    /* 
+    public static final double ENCODER_OFFSET_PIVOT = -0.105; // new encoder offset as of 2/27 9pm
     public static final double ENCODER_OFFSET_WRIST = -0.43;
+    */
+    // zero offsets for simulation test
+    public static final double ENCODER_OFFSET_PIVOT = -0.02;
+    public static final double ENCODER_OFFSET_WRIST = 0.0;
 
     public static final double TOLERANCE = 0.01; 
 
@@ -92,7 +99,7 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-7.5, 10),
+        STASH(-7.5, 0), // changing this temporarily for simulator test
         INTAKE(-7.5, 140),
         SPEAKER(30, 2),
         AMP(65, 2),
@@ -149,9 +156,10 @@ public class WrivotStates extends SubsystemBase {
       double targetWristDeg = targetState.getWristDegrees();
 
       return 
-        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(targetState))
-        .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
-        .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState));
+        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(BotAngleState.STASH)) // need to check vs. wrist degrees for STASH here
+         .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
+         .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState))
+        .andThen(runOnce(() -> { System.err.println("Am I running in order"); System.err.flush();}));
     }
 
     private Command cmdGoToDegree(TalonFX setMotor, double degrees, double gearRatio){
@@ -159,7 +167,8 @@ public class WrivotStates extends SubsystemBase {
         double targetRotations = Conversions.degToRotationsGearRatio(degrees, gearRatio);
         setMotor.setControl(requestPositionVoltage.withPosition(targetRotations));
         System.err.println("here we are cmdGoToDegree");
-      }, () -> {});
+        System.err.flush();
+      }, () -> { System.err.println("End of startEnd"); System.err.flush(); });
     }
 
 
@@ -188,10 +197,11 @@ public class WrivotStates extends SubsystemBase {
     private boolean isPivotFinished(BotAngleState targetState){
       double targetRotations = Conversions.degToRotations(targetState.getPivotDegrees());
       boolean returnValue;
-
+      
       if (Math.abs(targetRotations - getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT)) <= TOLERANCE){
         returnValue = true;
         System.err.println("Err Pivot");
+        System.err.flush();
       }else{
         returnValue = false;
       }
@@ -203,9 +213,10 @@ public class WrivotStates extends SubsystemBase {
       double targetRotations = Conversions.degToRotations(targetState.getWristDegrees());
       boolean returnValue;
 
-      if (Math.abs(targetRotations - getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST)) <= TOLERANCE){
+            if (Math.abs(targetRotations - getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST)) <= TOLERANCE){
         returnValue = true;
         System.err.println("Err wrist");
+        System.err.flush();
       }else{
         returnValue = false;
       }

@@ -62,6 +62,11 @@ public class Controls {
     controller.dpadUp.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.SPEAKER)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
+    // shoot
+    controller.rightTriggerB.onTrue(bot.shooter.cmdShootOut(bot.wrivotStates)
+    .until(() -> { return !controller.rightTriggerB.getAsBoolean(); }));
+
   }
     
 }

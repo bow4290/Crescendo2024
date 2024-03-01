@@ -49,7 +49,7 @@ public Shooter(){
 }
 
   public Command cmdShootOut(WrivotStates requireWrivotStates){
-    return Commands.parallel(
+    return Commands.sequence( // this won't actually work i'm just avoiding the runtime exception
       cmdRunShooter(SHOOTER_OUT_RPM),
       cmdRunIndexer(INDEXER_OUT_SPEED).beforeStarting(Commands.run(() -> {}).until(() -> isShooterSpeed()))
     );
@@ -64,7 +64,7 @@ public Shooter(){
 
   private Command cmdRunIndexer(double targetSpeed){
     return this.runEnd(
-    () -> {
+    () -> { System.err.println("cmdRunIndexer executing"); System.err.flush();
       motorIndexer.setControl(dutyCycleOut.withOutput(targetSpeed));
     },
     () -> {
