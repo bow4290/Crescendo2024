@@ -29,10 +29,10 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = -0.105;
+    public static final double ENCODER_OFFSET_PIVOT = -0.946;
     public static final double ENCODER_OFFSET_WRIST = -0.43;
 
-    public static final double TOLERANCE = 0.01; 
+    public static final double TOLERANCE = 0.005; 
 
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
@@ -63,7 +63,7 @@ public class WrivotStates extends SubsystemBase {
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
         
-        configurationPivot.Slot0.kP = 0.25; // TODO: tune pivot PID
+        configurationPivot.Slot0.kP = 0.91; // TODO: tune pivot PID
         configurationPivot.Slot0.kI = 0;
         configurationPivot.Slot0.kD = 0.1;
 
@@ -92,10 +92,10 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-7.5, 10),
+        STASH(-7.5, 0.1),
         INTAKE(-7.5, 140),
-        SPEAKER(30, 2),
-        AMP(65, 2),
+        SPEAKER(30, 0.1),
+        AMP(65, 0.1),
         AIMING(0, 0){
             @Override
             public double getPivotDegrees() {
@@ -158,7 +158,8 @@ public class WrivotStates extends SubsystemBase {
       return this.startEnd(() -> {
         double targetRotations = Conversions.degToRotationsGearRatio(degrees, gearRatio);
         setMotor.setControl(requestPositionVoltage.withPosition(targetRotations));
-        System.err.println("here we are cmdGoToDegree");
+        System.err.println("cmdGoToDegree called");
+        System.err.flush();
       }, () -> {});
     }
 
@@ -171,7 +172,7 @@ public class WrivotStates extends SubsystemBase {
      * @return Rotations with offset applied as well as corrected clipping.
      */
     private double getEncoderWithOffset(double rawValue, double offsetValue){
-      double value = Math.floor(rawValue * 100) / 100;
+      double value = Math.floor(rawValue * 1000) / 1000;
       
       return getCorrectedRotations(value + offsetValue);
     }
@@ -189,9 +190,13 @@ public class WrivotStates extends SubsystemBase {
       double targetRotations = Conversions.degToRotations(targetState.getPivotDegrees());
       boolean returnValue;
 
+      System.err.println(String.format("Pivot Target Rotations: %f", targetRotations));
+      System.err.flush();
+
       if (Math.abs(targetRotations - getEncoderWithOffset(encoderPivot.getAbsolutePosition(), ENCODER_OFFSET_PIVOT)) <= TOLERANCE){
         returnValue = true;
-        System.err.println("Err Pivot");
+        System.err.println("Pivot Finished");
+        System.err.flush();
       }else{
         returnValue = false;
       }
@@ -203,9 +208,13 @@ public class WrivotStates extends SubsystemBase {
       double targetRotations = Conversions.degToRotations(targetState.getWristDegrees());
       boolean returnValue;
 
+      System.err.println(String.format("Wrist Target Rotations: %f", targetRotations));
+      System.err.flush();
+
       if (Math.abs(targetRotations - getEncoderWithOffset(encoderWrist.getAbsolutePosition(), ENCODER_OFFSET_WRIST)) <= TOLERANCE){
         returnValue = true;
-        System.err.println("Err wrist");
+        System.err.println("Wrist Finished");
+        System.err.flush();
       }else{
         returnValue = false;
       }
