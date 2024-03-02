@@ -20,10 +20,10 @@ public class Shooter extends SubsystemBase {
   public static final int MOTOR_ID_INDEXER = 16;
 
   public static final double SHOOTER_IN_RPM = -1000; // TODO: adjust Shooter in Speed to be more accurate
-  public static final double SHOOTER_OUT_RPM = 2000;
+  public static final double SHOOTER_OUT_RPM = 6000;
   
   public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
-  public static final double INDEXER_OUT_SPEED = 0.45; // TODO: adjust Indexer out Speed to be more accurate
+  public static final double INDEXER_OUT_SPEED = 0.75; // TODO: adjust Indexer out Speed to be more accurate
 
   public static final double GEAR_RATIO_SHOOTER = 2/1;
 
@@ -49,7 +49,8 @@ public Shooter(){
   public Command cmdShootOut(){
     return Commands.sequence(
       cmdStartShooter(SHOOTER_OUT_RPM),
-      Commands.waitUntil(() -> isShooterSpeed(SHOOTER_OUT_RPM)),
+      // Commands.waitUntil(() -> isShooterSpeed(SHOOTER_OUT_RPM)),
+      Commands.waitSeconds(2),
       cmdRunIndexer(INDEXER_OUT_SPEED)
     ).handleInterrupt(this::stopShooter);
   }
@@ -88,7 +89,7 @@ public Shooter(){
 
   public boolean isShooterSpeed(double targetRPM){
     double targetVelocity = targetRPM * GEAR_RATIO_SHOOTER;
-    if (Math.abs(motorShooter.getVelocity().getValueAsDouble() - targetVelocity) <= 80){
+    if (Math.abs(motorShooter.getVelocity().getValueAsDouble() * 60 - targetVelocity) <= 10){
       return true;
     }else {
       return false;
