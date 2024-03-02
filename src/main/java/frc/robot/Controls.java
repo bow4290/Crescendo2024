@@ -62,6 +62,17 @@ public class Controls {
     controller.dpadUp.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.SPEAKER)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
+    controller.square_x.onTrue(bot.intake.cmdIntakeIn(bot.wrivotStates).until(() -> {return !controller.square_x.getAsBoolean();}));
+    controller.circle_b.onTrue(bot.intake.cmdIntakeOut(bot.wrivotStates).until(() -> {return !controller.circle_b.getAsBoolean();}));
+
+    controller.leftTriggerB.onTrue(Commands.parallel(
+      bot.intake.cmdIntakeIn(bot.wrivotStates).until(() -> {return !controller.leftTriggerB.getAsBoolean();}),
+      bot.shooter.cmdShooterIntake().until(() -> {return !controller.leftTriggerB.getAsBoolean();})
+    ));
+
+    controller.rightTriggerB.onTrue(bot.shooter.cmdShootOut().until(() -> {return !controller.rightTriggerB.getAsBoolean();}));
+
   }
     
 }

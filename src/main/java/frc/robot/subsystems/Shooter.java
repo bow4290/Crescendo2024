@@ -19,11 +19,11 @@ public class Shooter extends SubsystemBase {
   public static final int MOTOR_ID_SHOOTER = 10;
   public static final int MOTOR_ID_INDEXER = 16;
 
-  public static final double SHOOTER_IN_RPM = 1000; // TODO: adjust Shooter in Speed to be more accurate
+  public static final double SHOOTER_IN_RPM = -1000; // TODO: adjust Shooter in Speed to be more accurate
   public static final double SHOOTER_OUT_RPM = 2000;
   
-  public static final double INDEXER_IN_SPEED = 0.3; // TODO: adjust Indexer in Speed to be more accurate
-  public static final double INDEXER_OUT_SPEED = 0.25; // TODO: adjust Indexer out Speed to be more accurate
+  public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
+  public static final double INDEXER_OUT_SPEED = 0.45; // TODO: adjust Indexer out Speed to be more accurate
 
   public static final double GEAR_RATIO_SHOOTER = 2/1;
 
@@ -51,20 +51,20 @@ public Shooter(){
       cmdStartShooter(SHOOTER_OUT_RPM),
       Commands.waitUntil(() -> isShooterSpeed(SHOOTER_OUT_RPM)),
       cmdRunIndexer(INDEXER_OUT_SPEED)
-    ).handleInterrupt(this::cmdStopShooter);
+    ).handleInterrupt(this::stopShooter);
   }
 
   public Command cmdShooterIntake(){
     return Commands.sequence(
       cmdStartShooter(SHOOTER_IN_RPM),
       cmdRunIndexer(INDEXER_IN_SPEED)
-    ).handleInterrupt(this::cmdStopShooter);
+    ).handleInterrupt(this::stopShooter);
   }
 
 
   // - Internal Commands -
   private Command cmdRunIndexer(double targetSpeed){
-    return this.runEnd(
+    return this.startEnd(
     () -> {
       motorIndexer.setControl(dutyCycleOut.withOutput(targetSpeed));
     },
@@ -82,19 +82,22 @@ public Shooter(){
     });
   }
 
-  private Command cmdStopShooter(){
-    return this.runOnce(() -> {
-      motorShooter.stopMotor();
-    });
+  void stopShooter(){
+    motorShooter.stopMotor();
   }
 
   public boolean isShooterSpeed(double targetRPM){
     double targetVelocity = targetRPM * GEAR_RATIO_SHOOTER;
-    if (Math.abs(motorShooter.getVelocity().getValueAsDouble() - targetVelocity) <= 8){
+    if (Math.abs(motorShooter.getVelocity().getValueAsDouble() - targetVelocity) <= 80){
       return true;
     }else {
       return false;
     }
+  }
+
+  public void endMotorRequests(){
+    motorIndexer.stopMotor();
+    motorShooter.stopMotor();
   }
 
 
