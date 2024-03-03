@@ -30,9 +30,8 @@ public class Shooter extends SubsystemBase {
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
 
-  private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
-
-final VelocityVoltage VelocityOut = new VelocityVoltage(0).withSlot(0);
+  final DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
+  final VelocityVoltage velocityOut = new VelocityVoltage(0).withSlot(0);
 
 public Shooter(){
   TalonFXConfiguration configurationShooter = new TalonFXConfiguration();
@@ -79,7 +78,7 @@ public Shooter(){
 
     return this.runOnce(
     () -> {
-      motorShooter.setControl(VelocityOut.withVelocity(targetRPS));
+      motorShooter.setControl(velocityOut.withVelocity(targetRPS));
     });
   }
 

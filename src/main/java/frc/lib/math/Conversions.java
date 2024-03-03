@@ -69,6 +69,10 @@ public class Conversions {
         return (degrees / 360) * gearRatio;
     }
 
+    public static double rpsToRpm(double inputRPS){
+      return inputRPS * 60;
+    }
+
     public static double rpmToRps(double inputRPM){
       return inputRPM / 60;
     }
