@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.lang.Exception;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -31,13 +32,9 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    /* 
+    
     public static final double ENCODER_OFFSET_PIVOT = -0.105; // new encoder offset as of 2/27 9pm
     public static final double ENCODER_OFFSET_WRIST = -0.43;
-    */
-    // zero offsets for simulation test
-    public static final double ENCODER_OFFSET_PIVOT = -0.02;
-    public static final double ENCODER_OFFSET_WRIST = 0.0;
 
     public static final double TOLERANCE = 0.01; 
 
@@ -49,6 +46,9 @@ public class WrivotStates extends SubsystemBase {
     private final DutyCycleEncoder encoderWrist = new DutyCycleEncoder(ENCODER_ID_WRIST);
 
     final PositionVoltage requestPositionVoltage = new PositionVoltage(0).withSlot(0);
+
+    // adding for diagnosis and debug
+    final DutyCycleOut requestDutyCycleOut = new DutyCycleOut(0);
 
     private BotAngleState currentState = BotAngleState.INTERMEDIATE;
     
@@ -69,6 +69,10 @@ public class WrivotStates extends SubsystemBase {
         configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
+
+        // adding for diagnosis and debug
+        configurationPivot.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.6;
+        
         
         configurationPivot.Slot0.kP = 0.25; // TODO: tune pivot PID
         configurationPivot.Slot0.kI = 0;
@@ -86,6 +90,10 @@ public class WrivotStates extends SubsystemBase {
 
         configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.8;
 
+        // adding for diagnosis and debug
+        configurationPivot.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.8;
+        
+
         configurationWrist.Slot0.kP = 0.5; // TODO: tune wrist PID
         configurationWrist.Slot0.kI = 0;
         configurationWrist.Slot0.kD = 0.1;
@@ -99,7 +107,7 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-7.5, 0), // changing this temporarily for simulator test
+        STASH(-7.5, 10), 
         INTAKE(-7.5, 140),
         SPEAKER(30, 2),
         AMP(65, 2),
@@ -160,6 +168,21 @@ public class WrivotStates extends SubsystemBase {
          .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
          .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState))
         .andThen(runOnce(() -> { System.err.println("Am I running in order"); System.err.flush();}));
+    }
+
+    // temporary commands for debug and diagnosis
+    public Command driveWrist(double wristSpeed) {
+      double MAX_SPEED = 0.2;
+
+      return runEnd(() -> { motorWrist.setControl(requestDutyCycleOut.withOutput(MAX_SPEED * wristSpeed)); },
+        () -> { motorWrist.stopMotor();});
+    }
+
+    public Command drivePivot(double pivotSpeed) {
+      double MAX_SPEED = 0.3;
+
+      return runEnd(() -> { motorPivot1.setControl(requestDutyCycleOut.withOutput(MAX_SPEED * pivotSpeed));},
+        () -> { motorWrist.stopMotor();});
     }
 
     private Command cmdGoToDegree(TalonFX setMotor, double degrees, double gearRatio){
