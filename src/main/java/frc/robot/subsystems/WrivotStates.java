@@ -61,11 +61,11 @@ public class WrivotStates extends SubsystemBase {
         configurationPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.6;
+        configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
         
-        configurationPivot.Slot0.kP = 0.91; // TODO: tune pivot PID
-        configurationPivot.Slot0.kI = 0;
-        configurationPivot.Slot0.kD = 0.1;
+        configurationPivot.Slot0.kP = 1.2; // TODO: tune pivot PID
+        configurationPivot.Slot0.kI = 0.0;
+        configurationPivot.Slot0.kD = 0.2;
 
         motorPivot1.getConfigurator().apply(configurationPivot);
         motorPivot2.getConfigurator().apply(configurationPivot);
@@ -77,7 +77,7 @@ public class WrivotStates extends SubsystemBase {
 
         configurationWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.8;
+        configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
 
         configurationWrist.Slot0.kP = 0.5; // TODO: tune wrist PID
         configurationWrist.Slot0.kI = 0;
