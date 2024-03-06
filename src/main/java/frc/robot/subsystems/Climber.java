@@ -48,7 +48,7 @@ public class Climber extends SubsystemBase {
 
   public Command cmdClimbSide(double velocityRPM, TalonFX targetMotor, WrivotStates reqWrivotStates){
     double velocityRPS = (velocityRPM * 60) * GEAR_RATIO_CLIMBER;
-    
+
     StartEndCommand cmd = new StartEndCommand(() -> {
       targetMotor.setControl(velocityRequest.withVelocity(velocityRPS));
     }, 
@@ -73,7 +73,5 @@ public class Climber extends SubsystemBase {
 
     return cmd;
   }
-
-
   
 }
