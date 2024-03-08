@@ -29,10 +29,10 @@ public class WrivotStates extends SubsystemBase {
 
     // Use these to get the actual zero of a through bore encoder, because 0 on it is often not what we want as zero. 
     // Positive if the value is negative at "zero", negative if value is positive at "zero"
-    public static final double ENCODER_OFFSET_PIVOT = -0.946;
-    public static final double ENCODER_OFFSET_WRIST = -0.43;
+    public static final double ENCODER_OFFSET_PIVOT = 0;
+    public static final double ENCODER_OFFSET_WRIST = -0.258;
 
-    public static final double TOLERANCE = 0.005; 
+    public static final double TOLERANCE = 0.01; 
 
     // Other Declarations
     private final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
@@ -62,10 +62,11 @@ public class WrivotStates extends SubsystemBase {
         configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         configurationPivot.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
+        configurationPivot.MotorOutput.PeakReverseDutyCycle = 0.5;
         
-        configurationPivot.Slot0.kP = 1.2; // TODO: tune pivot PID
+        configurationPivot.Slot0.kP = 1.5; // TODO: tune pivot PID
         configurationPivot.Slot0.kI = 0.0;
-        configurationPivot.Slot0.kD = 0.2;
+        configurationPivot.Slot0.kD = 0.0;
 
         motorPivot1.getConfigurator().apply(configurationPivot);
         motorPivot2.getConfigurator().apply(configurationPivot);
@@ -78,10 +79,12 @@ public class WrivotStates extends SubsystemBase {
         configurationWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         configurationWrist.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
+        configurationWrist.MotorOutput.PeakForwardDutyCycle = 0.5;
+        configurationWrist.MotorOutput.PeakReverseDutyCycle = 0.3;
 
-        configurationWrist.Slot0.kP = 0.5; // TODO: tune wrist PID
-        configurationWrist.Slot0.kI = 0;
-        configurationWrist.Slot0.kD = 0.1;
+        configurationWrist.Slot0.kP = 0.15; // TODO: tune wrist PID
+        configurationWrist.Slot0.kI = 0.0;
+        configurationWrist.Slot0.kD = 0.0;
 
         motorWrist.getConfigurator().apply(configurationWrist);
     }
@@ -92,10 +95,10 @@ public class WrivotStates extends SubsystemBase {
      * These parameters can be accessed with the getPivotDegrees() and getWristDegrees(). 
      */
     public enum BotAngleState { // TODO: TUNE / INPUT VALUES!! VERY IMPORTANT.
-        STASH(-7.5, 0.1),
+        STASH(-7.5, 0),
         INTAKE(-7.5, 140),
-        SPEAKER(30, 0.1),
-        AMP(65, 0.1),
+        SPEAKER(30, 0),
+        AMP(65, 0),
         AIMING(0, 0){
             @Override
             public double getPivotDegrees() {
@@ -148,10 +151,12 @@ public class WrivotStates extends SubsystemBase {
       double targetPivotDeg = targetState.getPivotDegrees();
       double targetWristDeg = targetState.getWristDegrees();
 
-      return 
-        cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(BotAngleState.STASH))
-        .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
-        .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState));
+      // return 
+      //   cmdGoToDegree(motorWrist, BotAngleState.STASH.getWristDegrees(), GEAR_RATIO_WRIST).until(() -> isWristFinished(BotAngleState.STASH))
+      //   .andThen(cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT)).until(() -> isPivotFinished(targetState))
+      //   .andThen(cmdGoToDegree(motorWrist, targetWristDeg, GEAR_RATIO_WRIST)).until(() -> isWristFinished(targetState));
+
+      return cmdGoToDegree(motorPivot1, targetPivotDeg, GEAR_RATIO_PIVOT).until(() -> isPivotFinished(targetState));
     }
 
     private Command cmdGoToDegree(TalonFX setMotor, double degrees, double gearRatio){

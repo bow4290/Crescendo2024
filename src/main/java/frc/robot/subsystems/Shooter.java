@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
   public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
   public static final double INDEXER_OUT_SPEED = 0.75; // TODO: adjust Indexer out Speed to be more accurate
 
-  public static final double GEAR_RATIO_SHOOTER = 2/1;
+  public static final double GEAR_RATIO_SHOOTER = 1/3.2;
 
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
@@ -49,7 +49,7 @@ public Shooter(){
     return Commands.sequence(
       cmdStartShooter(SHOOTER_OUT_RPM),
       // Commands.waitUntil(() -> isShooterSpeed(SHOOTER_OUT_RPM)),
-      Commands.waitSeconds(2),
+      Commands.waitSeconds(2.2),
       cmdRunIndexer(INDEXER_OUT_SPEED)
     ).handleInterrupt(this::stopShooter);
   }
