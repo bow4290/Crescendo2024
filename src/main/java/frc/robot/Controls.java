@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.lib.GenericGamepad;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.NewWrivot.BotStates;
 import frc.robot.subsystems.WrivotStates.BotAngleState;
 
 public class Controls {
@@ -37,37 +38,40 @@ public class Controls {
   // Dpad Left - State Amp
   // Dpad Up - State Shoot
   // Cross / A - Cancel Wrivot Action
+  // Left Trigger - Intake (All)
+  // Right Trigger - Shoot
   public static void configureOperator(RobotContainer bot){
     GenericGamepad controller = bot.controllerOperator;
 
     // Cancel Wrivot Action
-    controller.cross_a.onTrue(Commands.runOnce(() -> bot.wrivotStates.endMotorRequests()));
+    controller.cross_a.onTrue(Commands.runOnce(() -> bot.wrivot.endMotorRequests()));
 
-    // Go to state: stash
-    controller.dpadRight.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.STASH)
+    // Dpad Right - State Stash
+    controller.dpadRight.onTrue(bot.wrivot.cmdGoToState(BotStates.STASH)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    // Go to state: intake
-    controller.dpadDown.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.INTAKE)
+    // Dpad Down - State Intake
+    controller.dpadDown.onTrue(bot.wrivot.cmdGoToState(BotStates.INTAKE)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    // Go to state: amp
-    controller.dpadLeft.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.AMP)
+    // Dpad Left - State Amp
+    controller.dpadLeft.onTrue(bot.wrivot.cmdGoToState(BotStates.AMP)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    // Go to state: shooter
-    controller.dpadUp.onTrue(bot.wrivotStates.cmdWrivotSequencer(BotAngleState.SPEAKER)
+    // Dpad Up - State Speaker
+    controller.dpadUp.onTrue(bot.wrivot.cmdGoToState(BotStates.SPEAKER)
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    controller.square_x.onTrue(bot.intake.cmdIntakeIn(bot.wrivotStates).until(() -> {return !controller.square_x.getAsBoolean();}));
-    controller.circle_b.onTrue(bot.intake.cmdIntakeOut(bot.wrivotStates).until(() -> {return !controller.circle_b.getAsBoolean();}));
+
+    controller.square_x.onTrue(bot.intake.cmdIntakeIn().until(() -> {return !controller.square_x.getAsBoolean();}));
+    controller.circle_b.onTrue(bot.intake.cmdIntakeOut().until(() -> {return !controller.circle_b.getAsBoolean();}));
 
     controller.leftTriggerB.onTrue(Commands.parallel(
-      bot.intake.cmdIntakeIn(bot.wrivotStates).until(() -> {return !controller.leftTriggerB.getAsBoolean();}),
+      bot.intake.cmdIntakeIn().until(() -> {return !controller.leftTriggerB.getAsBoolean();}),
       bot.shooter.cmdShooterIntake().until(() -> {return !controller.leftTriggerB.getAsBoolean();})
     ));
 

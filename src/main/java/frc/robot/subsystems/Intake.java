@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
   
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
-  public Command cmdIntakeIn(WrivotStates requireWrivotStates){
+  public Command cmdIntakeIn(){
 
     StartEndCommand cmd = new StartEndCommand(
       () -> {
@@ -27,18 +27,18 @@ public class Intake extends SubsystemBase {
       },
       () -> {
         motorIntake.stopMotor();
-      }, this, requireWrivotStates);
+      }, this);
 
     return cmd;
   }
 
-  public Command cmdIntakeOut(WrivotStates requireWrivotStates){
+  public Command cmdIntakeOut(){
     StartEndCommand cmd = new StartEndCommand(() -> {
       motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_OUT_SPEED));
     },
     () -> {
       motorIntake.stopMotor();
-    }, this, requireWrivotStates);
+    }, this);
 
     return cmd;
 
