@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -66,6 +68,8 @@ public class Controls {
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
+    controller.rightMiddle.whileTrue(bot.wrivot.cmdDrivePivot(0.4));
+    controller.leftMiddle.whileTrue(bot.wrivot.cmdDrivePivot(-0.3));
 
     controller.square_x.onTrue(bot.intake.cmdIntakeIn().until(() -> {return !controller.square_x.getAsBoolean();}));
     controller.circle_b.onTrue(bot.intake.cmdIntakeOut().until(() -> {return !controller.circle_b.getAsBoolean();}));
