@@ -102,7 +102,7 @@ public class NewWrivot extends SubsystemBase {
     // For both wrist and pivot, 0 is at the mechanical stop (pivot all the way down, wrist stashed against mech stop)
     STASH(0, 0),
     INTAKE(0, 130),
-    SPEAKER(50, 0),
+    SPEAKER(83, 0),
     AMP(60, 0),
     INBETWEEN(0, 0),
     AIMING(0, 0);
