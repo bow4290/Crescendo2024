@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.function.IntSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -27,7 +30,7 @@ public class NewWrivot extends SubsystemBase {
   public static final double GEAR_RATIO_PIVOT = 72.96/1;
   public static final double GEAR_RATIO_WRIST = 18.75/1;
 
-  public static final double FEEDFORWARD_PIVOT = 0.1;
+  public static final double FEEDFORWARD_PIVOT = 0.5;
 
   public static final double UPWARD_PIVOT_SPEED_SCALE = 0.35;
   public static final double DOWNWARD_PIVOT_SPEED_SCALE = 0.2;
@@ -39,7 +42,8 @@ public class NewWrivot extends SubsystemBase {
   final TalonFX motorPivot2 = new TalonFX(MOTOR_ID_PIVOT_2);
   final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
   
-  final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
+  final PositionVoltage positionRequest0 = new PositionVoltage(0).withSlot(0);
+  final PositionVoltage positionRequest1 = new PositionVoltage(0).withSlot(1);
   final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   public BotStates currentBotState = BotStates.INBETWEEN;
@@ -57,9 +61,14 @@ public class NewWrivot extends SubsystemBase {
     
     configurationPivot.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.4;
 
-    configurationPivot.Slot0.kP = 12;
+    configurationPivot.Slot0.kP = 16;
     configurationPivot.Slot0.kI = 0;
     configurationPivot.Slot0.kD = 0;
+
+    // Use Slot 1 for downward motion, cause we are too lazy to figure out feedforward
+    configurationPivot.Slot1.kP = 3;
+    configurationPivot.Slot1.kI = 0;
+    configurationPivot.Slot1.kD = 0;
 
     motorPivot1.getConfigurator().apply(configurationPivot);
     motorPivot2.getConfigurator().apply(configurationPivot);
@@ -123,9 +132,13 @@ public class NewWrivot extends SubsystemBase {
      SequentialCommandGroup cmdGroup = new SequentialCommandGroup(
       // Set to inbetween while moving
       new InstantCommand(() -> {currentBotState = BotStates.INBETWEEN;}),
-      cmdGoToDegree(motorWrist, BotStates.STASH.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(BotStates.STASH)),
-      cmdGoToDegree(motorPivot1, targetState.getPivotDeg(), GEAR_RATIO_PIVOT, 0).until(() -> isPivotFinished(targetState)),
-      cmdGoToDegree(motorWrist, targetState.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(targetState)),
+
+      cmdGoToDegWrist(BotStates.STASH.getWristDeg()).until(() -> isWristFinished(BotStates.STASH)),
+      cmdGoToDegPivot(targetState.getPivotDeg()).until(() -> isPivotFinished(targetState)),
+      cmdGoToDegWrist(targetState.getWristDeg()).until(() -> isWristFinished(targetState)),
+      // cmdGoToDegree(motorWrist, BotStates.STASH.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(BotStates.STASH)),
+      // cmdGoToDegree(motorPivot1, targetState.getPivotDeg(), GEAR_RATIO_PIVOT, 0).until(() -> isPivotFinished(targetState)),
+      // cmdGoToDegree(motorWrist, targetState.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(targetState)),
       // once everything is known to be finished, update current state to be correct
       new InstantCommand(() -> {currentBotState = targetState;})
      );
@@ -157,15 +170,29 @@ public class NewWrivot extends SubsystemBase {
     motorWrist.stopMotor();
   }
 
-  private Command cmdGoToDegree(TalonFX targetMotor, double targetDegrees, double gearRatio, double feedForward){
+  private Command cmdGoToDegPivot(double targetDegrees){
+    return this.startEnd(() -> {
+      int pidSlot = 0;
+      if (Conversions.degToRotationsGearRatio(targetDegrees, GEAR_RATIO_PIVOT) < motorPivot1.getPosition().getValueAsDouble()) {
+        pidSlot = 1;
+      }
+      motorGoToDegree(motorPivot1, targetDegrees, GEAR_RATIO_PIVOT, pidSlot);
+    }, () -> {
+
+    });
+  }
+
+  private Command cmdGoToDegWrist(double targetDegrees){
+    return this.startEnd(() -> {
+      motorGoToDegree(motorWrist, targetDegrees, GEAR_RATIO_WRIST, 0);
+    }, () -> {
+    });
+  }
+
+  private void motorGoToDegree(TalonFX targetMotor, double targetDegrees, double gearRatio, int targetPidSlot){
     double positionRotations = Conversions.degToRotationsGearRatio(targetDegrees, gearRatio);
 
-    return this.startEnd(() -> {
-      targetMotor.setControl(positionRequest.withPosition(positionRotations).withFeedForward(feedForward));
-    }, 
-    () -> {
-      System.out.println(String.format("cmdGoToDegree finished with target: %f deg", targetDegrees));
-    });
+    targetMotor.setControl(positionRequest0.withSlot(targetPidSlot).withPosition(positionRotations));
   }
 
   /**
