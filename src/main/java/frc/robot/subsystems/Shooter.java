@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
   public static final int MOTOR_ID_SHOOTER = 10;
   public static final int MOTOR_ID_INDEXER = 16;
 
-  public static final double SHOOTER_IN_RPM = -1000; // TODO: adjust Shooter in Speed to be more accurate
+  public static final double SHOOTER_IN_RPM = -2500; // TODO: adjust Shooter in Speed to be more accurate
   public static final double SHOOTER_OUT_RPM = 6000;
   
   public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
