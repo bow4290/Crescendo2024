@@ -77,10 +77,10 @@ public class Controls {
     controller.leftJoystickPushed.onTrue(new InstantCommand(() -> bot.wrivot.zeroWrivot()));
 
     // Left Bumper - Intake Grab
-    controller.rightBumper.whileTrue(bot.intake.cmdIntakeGrab());
+    controller.leftBumper.whileTrue(bot.intake.cmdIntakeGrab());
 
     // Right Bumper - Intake Drop / Throw
-    controller.leftBumper.whileTrue(bot.intake.cmdIntakeOut());
+    controller.rightBumper.whileTrue(bot.intake.cmdIntakeOut());
 
     // Left Trigger - Intake
     controller.leftTriggerB.onTrue(Commands.parallel(
