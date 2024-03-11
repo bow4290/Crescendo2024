@@ -12,8 +12,9 @@ public class Intake extends SubsystemBase {
   // Subsystem Constants
   public static final int MOTOR_ID_INTAKE = 9;
 
-  public static final double INTAKE_IN_SPEED = 0.45; // TODO: adjust Intake in Speed to be more accurate
-  public static final double INTAKE_OUT_SPEED = -0.90; // TODO: adjust Intake out Speed to be more accurate
+  public static final double INTAKE_IN_SPEED = 0.45;
+  public static final double INTAKE_GRAB_SPEED = 0.25;
+  public static final double INTAKE_OUT_SPEED = -0.70;
 
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
   
@@ -24,6 +25,18 @@ public class Intake extends SubsystemBase {
     StartEndCommand cmd = new StartEndCommand(
       () -> {
         motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_IN_SPEED));
+      },
+      () -> {
+        motorIntake.stopMotor();
+      }, this);
+
+    return cmd;
+  }
+
+  public Command cmdIntakeGrab(){
+    StartEndCommand cmd = new StartEndCommand(
+      () -> {
+        motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_GRAB_SPEED));
       },
       () -> {
         motorIntake.stopMotor();

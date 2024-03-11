@@ -101,9 +101,9 @@ public class NewWrivot extends SubsystemBase {
 
     // For both wrist and pivot, 0 is at the mechanical stop (pivot all the way down, wrist stashed against mech stop)
     STASH(0, 0),
-    INTAKE(0, 130),
-    SPEAKER(83, 0),
-    AMP(60, 0),
+    INTAKE(0, 126),
+    SPEAKER(78, 0),
+    AMP(79, 164),
     INBETWEEN(0, 0),
     AIMING(0, 0);
 
@@ -163,6 +163,12 @@ public class NewWrivot extends SubsystemBase {
       motorPivot2.stopMotor();
     });
   }
+
+  public void zeroWrivot(){
+    motorPivot1.setPosition(0);
+    motorPivot2.setPosition(0);
+    motorWrist.setPosition(0);
+  } 
 
   public void endMotorRequests(){
     motorPivot1.stopMotor();

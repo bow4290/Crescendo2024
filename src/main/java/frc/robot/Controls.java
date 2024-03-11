@@ -68,17 +68,27 @@ public class Controls {
     .until(() -> controller.cross_a.getAsBoolean())
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
+    // Options - Manual Pivot Up 
     controller.rightMiddle.whileTrue(bot.wrivot.cmdDrivePivot(0.4));
+    // Share - Manual Pivot Down
     controller.leftMiddle.whileTrue(bot.wrivot.cmdDrivePivot(-0.3));
 
-    controller.square_x.onTrue(bot.intake.cmdIntakeIn().until(() -> {return !controller.square_x.getAsBoolean();}));
-    controller.circle_b.onTrue(bot.intake.cmdIntakeOut().until(() -> {return !controller.circle_b.getAsBoolean();}));
+    // L3 / Left Joystick Push - Zero Wrivot
+    controller.leftJoystickPushed.onTrue(new InstantCommand(() -> bot.wrivot.zeroWrivot()));
 
+    // Left Bumper - Intake Grab
+    controller.rightBumper.whileTrue(bot.intake.cmdIntakeGrab());
+
+    // Right Bumper - Intake Drop / Throw
+    controller.leftBumper.whileTrue(bot.intake.cmdIntakeOut());
+
+    // Left Trigger - Intake
     controller.leftTriggerB.onTrue(Commands.parallel(
       bot.intake.cmdIntakeIn().until(() -> {return !controller.leftTriggerB.getAsBoolean();}),
       bot.shooter.cmdShooterIntake().until(() -> {return !controller.leftTriggerB.getAsBoolean();})
     ));
 
+    // Right Trigger - Shoot
     controller.rightTriggerB.onTrue(bot.shooter.cmdShootOut().until(() -> {return !controller.rightTriggerB.getAsBoolean();}));
 
   }
