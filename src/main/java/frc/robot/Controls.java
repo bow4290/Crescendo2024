@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.lib.GenericGamepad;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.NewWrivot.BotStates;
 import frc.robot.subsystems.WrivotStates.BotAngleState;
 
@@ -31,6 +32,12 @@ public class Controls {
         () -> controller.rightX.getAsDouble(),
         () -> controller.rightBumper.getAsBoolean()
     ));
+
+    // Dpad Up - Climber Up (Ready)
+    controller.dpadUp.whileTrue(bot.climber.cmdClimbTogether(Climber.CLIMBER_UP_SPEED));
+
+    // Dpad Down - Climber Down (Chin-up)
+    controller.dpadDown.whileTrue(bot.climber.cmdClimbTogether(Climber.CLIMBER_DOWN_SPEED));
 
   }
 

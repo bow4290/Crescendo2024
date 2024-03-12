@@ -22,6 +22,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final NewWrivot wrivot = new NewWrivot();
+    public final Climber climber = new Climber();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
