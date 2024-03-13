@@ -1,9 +1,17 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+
+import com.pathplanner.lib.auto.*;
+import com.pathplanner.lib.commands.*;
+
 import frc.lib.GenericGamepad;
-import frc.robot.autos.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.NewWrivot.BotStates;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -12,6 +20,12 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    public final static double AUTO_TIMEOUT_INTAKE = 1.25;
+    public final static double AUTO_TIMEOUT_GRAB = 0.15;
+    public final static double AUTO_TIMEOUT_DROP = 1;
+    public final static double AUOT_SHOOT_TIMEOUT = 2.5;
+    public final static double AUTO_STATE_TIMEOUT = 5;
+
     /* Controllers */
     public final GenericGamepad controllerDriver = GenericGamepad.from(0);
     public final GenericGamepad controllerOperator = GenericGamepad.from(1);
@@ -23,7 +37,8 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final NewWrivot wrivot = new NewWrivot();
     public final Climber climber = new Climber();
-
+    
+    private SendableChooser<Command> autoChooser;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -31,6 +46,26 @@ public class RobotContainer {
         // Configure the button bindings
         Controls.configureDriver(this);
         Controls.configureOperator(this);
+
+        // Register Name Commands
+        NamedCommands.registerCommand("Intake Full", Commands.parallel(
+          intake.cmdIntakeIn(),
+          shooter.cmdShooterIntake()
+        ).withTimeout(AUTO_TIMEOUT_INTAKE));
+
+        NamedCommands.registerCommand("Intake Grab", intake.cmdIntakeGrab().withTimeout(AUTO_TIMEOUT_GRAB));
+        NamedCommands.registerCommand("Intake Drop", intake.cmdIntakeOut().withTimeout(AUTO_TIMEOUT_DROP));
+
+        NamedCommands.registerCommand("Shoot", shooter.cmdShootOut().withTimeout(AUOT_SHOOT_TIMEOUT));
+
+        NamedCommands.registerCommand("Go To Stash", wrivot.cmdGoToState(BotStates.STASH).withTimeout(AUTO_STATE_TIMEOUT));
+        NamedCommands.registerCommand("Go To Intake", wrivot.cmdGoToState(BotStates.INTAKE).withTimeout(AUTO_STATE_TIMEOUT));
+        NamedCommands.registerCommand("Go To Speaker", wrivot.cmdGoToState(BotStates.SPEAKER).withTimeout(AUTO_STATE_TIMEOUT));
+        NamedCommands.registerCommand("Go To Amp", wrivot.cmdGoToState(BotStates.AMP).withTimeout(AUTO_STATE_TIMEOUT));
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("Auto Picker", autoChooser);
     }
 
 
@@ -40,7 +75,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return new exampleAuto(swerve);
+      // An ExampleCommand will run in autonomous
+      return autoChooser.getSelected();
     }
 }
