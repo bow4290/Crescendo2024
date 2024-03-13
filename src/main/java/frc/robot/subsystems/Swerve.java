@@ -14,8 +14,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.pathplanner.lib.auto.*;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
@@ -35,6 +41,28 @@ public class Swerve extends SubsystemBase {
         };
 
         swerveOdometry = new SwerveDriveOdometry(SwerveConstants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+
+        // Autobuilder used by PathPlannerLib
+        AutoBuilder.configureHolonomic(
+        this::getPose, 
+        this::setPose, 
+        () -> SwerveConstants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates()), 
+        this::driveRobotRelative,
+        new HolonomicPathFollowerConfig(
+          new PIDConstants(SwerveConstants.Swerve.driveKP, SwerveConstants.Swerve.angleKI, SwerveConstants.Swerve.driveKD),
+          new PIDConstants(SwerveConstants.Swerve.angleKP, SwerveConstants.Swerve.angleKI, SwerveConstants.Swerve.driveKD),
+          SwerveConstants.Swerve.maxSpeed,
+          0.45,
+          new ReplanningConfig()), 
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()){
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        }, 
+        this);
+
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -111,6 +139,15 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             mod.resetToAbsolute();
         }
+    }
+
+    // For pathplanner
+    public void driveRobotRelative(ChassisSpeeds givenChassisSpeeds){
+      SwerveModuleState[] givenSwerveModStates = SwerveConstants.Swerve.swerveKinematics.toSwerveModuleStates(givenChassisSpeeds);
+
+      for(SwerveModule mod : mSwerveMods){
+        mod.setDesiredState(givenSwerveModStates[mod.moduleNumber], false);
+      }
     }
 
     @Override
