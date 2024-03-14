@@ -164,6 +164,14 @@ public class NewWrivot extends SubsystemBase {
     });
   }
 
+  public Command cmdDriveWrist(double speed){
+    return this.runEnd(() -> {
+      motorWrist.setControl(dutyCycleRequest.withOutput(speed));
+    }, () -> {
+      motorWrist.stopMotor();
+    });
+  }
+
   public void zeroWrivot(){
     motorPivot1.setPosition(0);
     motorPivot2.setPosition(0);
