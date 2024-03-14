@@ -82,6 +82,10 @@ public Shooter(){
     });
   }
 
+  public Command cmdStopShooter(){
+    return this.runOnce(() -> stopShooter());
+  }
+
   private void stopShooter(){
     motorShooter.stopMotor();
   }
