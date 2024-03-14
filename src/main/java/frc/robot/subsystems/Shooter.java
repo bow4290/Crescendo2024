@@ -21,6 +21,7 @@ public class Shooter extends SubsystemBase {
 
   public static final double SHOOTER_IN_RPM = -4000; // TODO: adjust Shooter in Speed to be more accurate
   public static final double SHOOTER_OUT_RPM = 6000;
+  public static final double SHOOTER_PRESPIN_RPM = 1500;
   
   public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
   public static final double INDEXER_OUT_SPEED = 0.75; // TODO: adjust Indexer out Speed to be more accurate
@@ -61,7 +62,6 @@ public Shooter(){
     ).handleInterrupt(this::stopShooter);
   }
 
-
   // - Internal Commands -
   private Command cmdRunIndexer(double targetSpeed){
     return this.startEnd(
@@ -73,7 +73,7 @@ public Shooter(){
     });
   }
 
-  private Command cmdStartShooter(double targetRPM){
+  public Command cmdStartShooter(double targetRPM){
     double targetRPS = Conversions.rpmToRpsGearRatio(targetRPM, GEAR_RATIO_SHOOTER);
 
     return this.runOnce(
@@ -82,7 +82,7 @@ public Shooter(){
     });
   }
 
-  void stopShooter(){
+  private void stopShooter(){
     motorShooter.stopMotor();
   }
 
