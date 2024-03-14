@@ -60,6 +60,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prespin Shooter", shooter.cmdStartShooter(Shooter.SHOOTER_PRESPIN_RPM));
         NamedCommands.registerCommand("Stop Shooter", shooter.cmdStopShooter());
 
+        NamedCommands.registerCommand("Intake", Commands.parallel(
+          intake.cmdIntakeIn(),
+          shooter.cmdShooterIntake()
+        ));
         NamedCommands.registerCommand("Shoot", shooter.cmdShootOut().withTimeout(AUTO_SHOOT_TIMEOUT));
 
         NamedCommands.registerCommand("Go To Stash", wrivot.cmdGoToState(BotStates.STASH).withTimeout(AUTO_STATE_TIMEOUT));
