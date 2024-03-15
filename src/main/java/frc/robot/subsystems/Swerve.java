@@ -144,6 +144,8 @@ public class Swerve extends SubsystemBase {
     // For pathplanner
     public void driveRobotRelative(ChassisSpeeds givenChassisSpeeds){
       SwerveModuleState[] givenSwerveModStates = SwerveConstants.Swerve.swerveKinematics.toSwerveModuleStates(givenChassisSpeeds);
+      
+      SwerveDriveKinematics.desaturateWheelSpeeds(givenSwerveModStates, SwerveConstants.Swerve.maxSpeed);
 
       for(SwerveModule mod : mSwerveMods){
         mod.setDesiredState(givenSwerveModStates[mod.moduleNumber], false);

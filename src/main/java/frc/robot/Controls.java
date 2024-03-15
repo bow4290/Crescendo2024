@@ -25,7 +25,7 @@ public class Controls {
     // Zero Gyro
     controller.triangle_y.onTrue(new InstantCommand(bot.swerve::zeroHeading));
 
-    // Swerve w/ Right Trigger as RobotCentric
+    // Swerve w/ Right Bumper as RobotCentric
     bot.swerve.setDefaultCommand(new TeleopSwerve(            
         bot.swerve, 
         () -> controller.leftY.getAsDouble(),
