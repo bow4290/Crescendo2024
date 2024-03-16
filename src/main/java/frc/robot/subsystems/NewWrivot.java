@@ -35,6 +35,8 @@ public class NewWrivot extends SubsystemBase {
   public static final double UPWARD_PIVOT_SPEED_SCALE = 0.35;
   public static final double DOWNWARD_PIVOT_SPEED_SCALE = 0.2;
 
+  public static final double PIVOT_W_CLEARANCE_DEG = 68; 
+
   public static final double TOLERANCE_PIVOT = 0.1;
   public static final double TOLERANCE_WRIST = 0.2; 
 
@@ -104,6 +106,7 @@ public class NewWrivot extends SubsystemBase {
     INTAKE(0, 126),
     SPEAKER(70, 0),
     AMP(74.5, 164),
+    SAFETY_PIVOT_STATE(PIVOT_W_CLEARANCE_DEG, 0),
     INBETWEEN(0, 0),
     AIMING(0, 0);
 
@@ -129,21 +132,49 @@ public class NewWrivot extends SubsystemBase {
    * @return A {@link SequentialCommandGroup} with the sequenced commands.
    */
   public Command cmdGoToState(BotStates targetState){
-     SequentialCommandGroup cmdGroup = new SequentialCommandGroup(
-      // Set to inbetween while moving
-      new InstantCommand(() -> {currentBotState = BotStates.INBETWEEN;}),
+    boolean isWristStashed = MathUtil.isNear(Conversions.degToRotationsGearRatio(BotStates.STASH.getWristDeg(), GEAR_RATIO_WRIST), motorWrist.getPosition().getValueAsDouble(), 0.5);
 
-      cmdGoToDegWrist(BotStates.STASH.getWristDeg()).until(() -> isWristFinished(BotStates.STASH)),
-      cmdGoToDegPivot(targetState.getPivotDeg()).until(() -> isPivotFinished(targetState)),
-      cmdGoToDegWrist(targetState.getWristDeg()).until(() -> isWristFinished(targetState)),
-      // cmdGoToDegree(motorWrist, BotStates.STASH.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(BotStates.STASH)),
-      // cmdGoToDegree(motorPivot1, targetState.getPivotDeg(), GEAR_RATIO_PIVOT, 0).until(() -> isPivotFinished(targetState)),
-      // cmdGoToDegree(motorWrist, targetState.getWristDeg(), GEAR_RATIO_WRIST, 0).until(() -> isWristFinished(targetState)),
-      // once everything is known to be finished, update current state to be correct
-      new InstantCommand(() -> {currentBotState = targetState;})
-     );
+    // SequentialCommandGroup cmdGroupOriginal = new SequentialCommandGroup(
+    //   // Set to inbetween while moving
+    //   new InstantCommand(() -> {currentBotState = BotStates.INBETWEEN;}),
 
-     return cmdGroup;
+    //   cmdGoToDegWrist(BotStates.STASH.getWristDeg()).until(() -> isWristFinished(BotStates.STASH)),
+    //   cmdGoToDegPivot(targetState.getPivotDeg()).until(() -> isPivotFinished(targetState)),
+    //   cmdGoToDegWrist(targetState.getWristDeg()).until(() -> isWristFinished(targetState)),
+    //   new InstantCommand(() -> {currentBotState = targetState;})
+    // );
+
+    SequentialCommandGroup cmd = new SequentialCommandGroup();
+
+    // Wrist Stash
+    if (motorPivot1.getPosition().getValueAsDouble() > Conversions.degToRotationsGearRatio(PIVOT_W_CLEARANCE_DEG, GEAR_RATIO_PIVOT) && !isWristStashed){
+      cmd.addCommands(
+        cmdGoToDegPivot(PIVOT_W_CLEARANCE_DEG).until(() -> isPivotFinished(BotStates.SAFETY_PIVOT_STATE)),
+        cmdGoToDegWrist(BotStates.STASH.getWristDeg()).until(() -> isWristFinished(BotStates.STASH))
+      );
+     } else {
+      cmd.addCommands(
+        cmdGoToDegWrist(BotStates.STASH.getWristDeg()).until(() -> isWristFinished(BotStates.STASH))
+      );
+    }
+
+    // Deploy Pivot + Wrist
+    if (targetState.getPivotDeg() > PIVOT_W_CLEARANCE_DEG && targetState.getWristDeg() > 0){
+      cmd.addCommands(
+        cmdGoToDegPivot(PIVOT_W_CLEARANCE_DEG).until(() -> isPivotFinished(BotStates.SAFETY_PIVOT_STATE)),
+        cmdGoToDegWrist(targetState.getWristDeg()).until(() -> isWristFinished(targetState)),
+        cmdGoToDegPivot(targetState.getPivotDeg()).until(() -> isPivotFinished(targetState))
+      );
+    } else {
+      cmd.addCommands(
+        cmdGoToDegPivot(targetState.getPivotDeg()).until(() -> isPivotFinished(targetState)),
+        cmdGoToDegWrist(targetState.getWristDeg()).until(() -> isWristFinished(targetState))
+      );
+    }
+
+
+
+     return cmd;
   }
 
   public Command cmdDrivePivot(double speed){
