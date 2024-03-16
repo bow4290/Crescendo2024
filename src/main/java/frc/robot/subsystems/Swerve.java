@@ -49,8 +49,8 @@ public class Swerve extends SubsystemBase {
         () -> SwerveConstants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates()), 
         this::driveRobotRelative,
         new HolonomicPathFollowerConfig(
-          new PIDConstants(SwerveConstants.Swerve.driveKP, SwerveConstants.Swerve.angleKI, SwerveConstants.Swerve.driveKD),
-          new PIDConstants(SwerveConstants.Swerve.angleKP, SwerveConstants.Swerve.angleKI, SwerveConstants.Swerve.driveKD),
+          new PIDConstants(5, 0, 0),
+          new PIDConstants(5, 0, 0),
           SwerveConstants.Swerve.maxSpeed,
           0.45,
           new ReplanningConfig()), 
