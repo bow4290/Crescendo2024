@@ -12,6 +12,7 @@ import com.pathplanner.lib.commands.*;
 import frc.lib.GenericGamepad;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.NewWrivot.BotStates;
+import frc.robot.autos.AutoCommands;
 
 
 /**
@@ -40,10 +41,11 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     
     private SendableChooser<Command> autoChooser;
+    private AutoCommands autoCommands;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
+        autoCommands = new AutoCommands(shooter, intake, swerve, wrivot);
         // Configure the button bindings
         Controls.configureDriver(this);
         Controls.configureOperator(this);
@@ -72,6 +74,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Go To Amp", wrivot.cmdGoToState(BotStates.AMP).withTimeout(AUTO_STATE_TIMEOUT));
 
         autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("HARDCODED Speaker Base Shoot", autoCommands.ShootSpeakerBase());
 
         SmartDashboard.putData("Auto Picker", autoChooser);
     }

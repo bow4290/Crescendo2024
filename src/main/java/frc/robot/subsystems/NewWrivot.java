@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,9 +36,9 @@ public class NewWrivot extends SubsystemBase {
   public static final double UPWARD_PIVOT_SPEED_SCALE = 0.35;
   public static final double DOWNWARD_PIVOT_SPEED_SCALE = 0.2;
 
-  public static final double PIVOT_W_CLEARANCE_DEG = 68; 
+  public static final double PIVOT_W_CLEARANCE_DEG = 60; 
 
-  public static final double TOLERANCE_PIVOT = 0.1;
+  public static final double TOLERANCE_PIVOT = 0.3;
   public static final double TOLERANCE_WRIST = 0.2; 
 
   final TalonFX motorPivot1 = new TalonFX(MOTOR_ID_PIVOT_1);
@@ -63,14 +64,14 @@ public class NewWrivot extends SubsystemBase {
     
     configurationPivot.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.4;
 
-    configurationPivot.Slot0.kP = 18;
+    configurationPivot.Slot0.kP = 18.75;
     configurationPivot.Slot0.kI = 0;
     configurationPivot.Slot0.kD = 0;
 
     // Use Slot 1 for downward motion, cause we are too lazy to figure out feedforward
-    configurationPivot.Slot1.kP = 2;
-    configurationPivot.Slot1.kI = 0;
-    configurationPivot.Slot1.kD = 0.25;
+    configurationPivot.Slot1.kP = 1.8;
+    configurationPivot.Slot1.kI = 0.1;
+    configurationPivot.Slot1.kD = 0.38;
 
     motorPivot1.getConfigurator().apply(configurationPivot);
     motorPivot2.getConfigurator().apply(configurationPivot);
@@ -145,6 +146,10 @@ public class NewWrivot extends SubsystemBase {
     // );
 
     SequentialCommandGroup cmd = new SequentialCommandGroup();
+
+    System.out.println(String.format("Motor Get Pos %f", motorPivot1.getPosition().getValueAsDouble()));
+    System.out.println(String.format("Motor Clearance %f", Conversions.degToRotationsGearRatio(PIVOT_W_CLEARANCE_DEG, GEAR_RATIO_PIVOT)));
+    
 
     // Wrist Stash
     if (motorPivot1.getPosition().getValueAsDouble() > Conversions.degToRotationsGearRatio(PIVOT_W_CLEARANCE_DEG, GEAR_RATIO_PIVOT) && !isWristStashed){
