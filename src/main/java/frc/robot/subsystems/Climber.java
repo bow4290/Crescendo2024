@@ -7,8 +7,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +29,11 @@ public class Climber extends SubsystemBase {
   public static final double CLIMBER_UP_SPEED = -0.4;
   public static final double CLIMBER_DOWN_SPEED = 0.6;
 
-  public static final double TOLERANCE = 1.2;
+  // Negative Up (i know (again))
+  public static final double UPPER_LIMIT = -15;
+  public static final double LOWER_LIMIT = 1;
+
+  public static final double TOLERANCE = 2.5;
 
   final TalonFX motorClimber1 = new TalonFX(MOTOR_ID_CLIMBER_1);
   final TalonFX motorClimber2 = new TalonFX(MOTOR_ID_CLIMBER_2);
@@ -44,7 +51,7 @@ public class Climber extends SubsystemBase {
     climberConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = 0;
 
     climberConfiguration.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-    climberConfiguration.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = -43;
+    climberConfiguration.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = -40;
 
     climberConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
     climberConfiguration.HardwareLimitSwitch.ReverseLimitEnable = true;
@@ -58,45 +65,38 @@ public class Climber extends SubsystemBase {
     motorClimber2.setPosition(0);
   }
 
-  public Command cmdClimbSide(double targetOut, TalonFX targetMotor){
 
-    StartEndCommand cmd = new StartEndCommand(() -> {
-      targetMotor.setControl(dutyCycleOut.withOutput(targetOut));
-    }, 
-    () -> {
-      targetMotor.stopMotor();
-    }, this);
+
+  public Command cmdClimbTogether(double targetOut){
+    ParallelCommandGroup cmd = new ParallelCommandGroup(
+      cmdStartSide(targetOut, motorClimber1).until(() -> shouldSideStop(motorClimber1, targetOut)).handleInterrupt(() -> motorClimber1.stopMotor()),
+      cmdStartSide(targetOut, motorClimber2).until(() -> shouldSideStop(motorClimber2, targetOut)).handleInterrupt(() -> motorClimber2.stopMotor())
+    );
 
     return cmd;
   }
 
-  public Command cmdClimbTogether(double targetOut){
-
+  private Command cmdStartSide(double targetOut, TalonFX targetMotor){
     StartEndCommand cmd = new StartEndCommand(() -> {
-      if (!shouldClimberStop(targetOut)) {
-        motorClimber1.setControl(dutyCycleOut.withOutput(targetOut));
-        motorClimber2.setControl(dutyCycleOut.withOutput(targetOut)); 
+      if (!shouldSideStop(targetMotor, targetOut)){
+        targetMotor.setControl(dutyCycleOut.withOutput(targetOut));
       }
     }, 
     () -> {
-      motorClimber1.stopMotor();
-      motorClimber2.stopMotor();
-    }, this);
 
+    });
     return cmd;
   }
 
-  private boolean shouldClimberStop(double targetSpeed){
-    double motor1Pos = motorClimber1.getPosition().getValueAsDouble();
-    double motor2Pos = motorClimber2.getPosition().getValueAsDouble();
+  private boolean shouldSideStop(TalonFX targetMotor, double targetSpeed){
 
     // Positive (everything is truly awful sometimes)
     if (targetSpeed < 0){
-      if (MathUtil.isNear(-43, motor1Pos, TOLERANCE) || MathUtil.isNear(-43, motor2Pos, TOLERANCE)){
+      if (MathUtil.isNear(-43, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
         return true;
       }
     } else {
-      if (MathUtil.isNear(0, motor1Pos, TOLERANCE) || MathUtil.isNear(0, motor2Pos, TOLERANCE)){
+      if (MathUtil.isNear(0, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
         return true;
       }
     }
