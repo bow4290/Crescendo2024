@@ -30,10 +30,10 @@ public class Climber extends SubsystemBase {
   public static final double CLIMBER_DOWN_SPEED = 0.6;
 
   // Negative Up (i know (again))
-  public static final double UPPER_LIMIT = -15;
-  public static final double LOWER_LIMIT = 1;
+  public static final double UPPER_LIMIT = -35;
+  public static final double LOWER_LIMIT = 0;
 
-  public static final double TOLERANCE = 2.5;
+  public static final double TOLERANCE = 1;
 
   final TalonFX motorClimber1 = new TalonFX(MOTOR_ID_CLIMBER_1);
   final TalonFX motorClimber2 = new TalonFX(MOTOR_ID_CLIMBER_2);
@@ -69,8 +69,8 @@ public class Climber extends SubsystemBase {
 
   public Command cmdClimbTogether(double targetOut){
     ParallelCommandGroup cmd = new ParallelCommandGroup(
-      cmdStartSide(targetOut, motorClimber1).until(() -> shouldSideStop(motorClimber1, targetOut)).handleInterrupt(() -> motorClimber1.stopMotor()),
-      cmdStartSide(targetOut, motorClimber2).until(() -> shouldSideStop(motorClimber2, targetOut)).handleInterrupt(() -> motorClimber2.stopMotor())
+      cmdStartSide(targetOut, motorClimber1).handleInterrupt(() -> motorClimber1.stopMotor()).until(() -> shouldSideStop(motorClimber1, targetOut)),
+      cmdStartSide(targetOut, motorClimber2).handleInterrupt(() -> motorClimber2.stopMotor()).until(() -> shouldSideStop(motorClimber2, targetOut))
     );
 
     return cmd;
@@ -92,11 +92,11 @@ public class Climber extends SubsystemBase {
 
     // Positive (everything is truly awful sometimes)
     if (targetSpeed < 0){
-      if (MathUtil.isNear(-43, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
+      if (MathUtil.isNear(UPPER_LIMIT, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
         return true;
       }
     } else {
-      if (MathUtil.isNear(0, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
+      if (MathUtil.isNear(LOWER_LIMIT, targetMotor.getPosition().getValueAsDouble(), TOLERANCE)){
         return true;
       }
     }
