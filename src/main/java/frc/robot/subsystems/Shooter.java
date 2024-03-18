@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
   public static final double INDEXER_IN_SPEED = -0.45; // TODO: adjust Indexer in Speed to be more accurate
   public static final double INDEXER_OUT_SPEED = 0.75; // TODO: adjust Indexer out Speed to be more accurate
 
-  public static final double GEAR_RATIO_SHOOTER = 1/3.2;
+  public static final double GEAR_RATIO_SHOOTER = 1/1.8;
 
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
