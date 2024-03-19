@@ -47,13 +47,6 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        //testing
-        led.setLedsToSolidColor(Color.kBrown);
-
-
-
-
-
         autoCommands = new AutoCommands(shooter, intake, swerve, wrivot);
         // Configure the button bindings
         Controls.configureDriver(this);

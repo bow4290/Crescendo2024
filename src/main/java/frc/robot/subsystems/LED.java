@@ -10,24 +10,43 @@ import edu.wpi.first.wpilibj.util.Color;
 public class LED extends SubsystemBase{
   public static final int pwmPort = 9;
   private static final int ledLength = 50;
-  private AddressableLED led = new AddressableLED(pwmPort);
+  private final AddressableLED led = new AddressableLED(pwmPort);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(ledLength);
+  private double totalBrightness;
 
   public LED() {
     led.setLength(ledLength);
     led.start();
   }
 
-  public Command showLeds() {
-    return runOnce(() -> {
-      setLedBufferToSolidColor(Color.kRed);
-      led.setData(ledBuffer);
-    });
+  public void showLeds() {
+    led.setData(ledBuffer);
+  }
+
+  public Command runLeds(Runnable action) {
+    return runOnce(
+      () -> {
+        action.run();
+        showLeds();
+      })
+      .ignoringDisable(true);
   }
 
   public void setLedBufferToSolidColor(Color color){
-    for (var ledIndex = 0; ledIndex < ledLength; ledIndex++) {
+    for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
       ledBuffer.setLED(ledIndex, color);
     }
+  }
+
+  public Command setLedsToSolidColor(Color color){
+    return runLeds(() -> setLedBufferToSolidColor(color));
+  }
+
+  public void powerLimitLeds() {
+    totalBrightness = 0;
+    for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
+      totalBrightness += ledBuffer
+    }
+
   }
 }

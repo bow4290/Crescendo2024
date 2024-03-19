@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,6 +40,9 @@ public class Controls {
 
     // Dpad Down - Climber Down (Chin-up)
     controller.dpadDown.whileTrue(bot.climber.cmdClimbTogether(Climber.CLIMBER_DOWN_SPEED));
+
+    controller.rightTriggerB.onTrue(bot.led.setLedsToSolidColor(Color.kRed));
+    controller.rightTriggerB.onFalse(bot.led.setLedsToSolidColor(Color.kBlack));
 
   }
 
