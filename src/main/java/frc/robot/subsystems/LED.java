@@ -13,6 +13,8 @@ public class LED extends SubsystemBase{
   private final AddressableLED led = new AddressableLED(pwmPort);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(ledLength);
   private double totalBrightness;
+  private final double maxTotalBrightness = 10;
+  private double brightnessDivider;
 
   public LED() {
     led.setLength(ledLength);
@@ -20,6 +22,7 @@ public class LED extends SubsystemBase{
   }
 
   public void showLeds() {
+    powerLimitLeds();
     led.setData(ledBuffer);
   }
 
@@ -45,7 +48,13 @@ public class LED extends SubsystemBase{
   public void powerLimitLeds() {
     totalBrightness = 0;
     for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
-      totalBrightness += ledBuffer
+      totalBrightness += ledBuffer.getLED(ledIndex).red + ledBuffer.getLED(ledIndex).green + ledBuffer.getLED(ledIndex).blue;
+    }
+    brightnessDivider = totalBrightness/maxTotalBrightness;
+    if(maxTotalBrightness>1) {
+      for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
+        ledBuffer.setLED(ledIndex, new Color(ledBuffer.getLED(ledIndex).red/brightnessDivider, ledBuffer.getLED(ledIndex).green/brightnessDivider, ledBuffer.getLED(ledIndex).blue/brightnessDivider));
+      }
     }
 
   }

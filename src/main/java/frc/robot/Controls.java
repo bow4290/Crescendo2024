@@ -41,12 +41,13 @@ public class Controls {
     // Dpad Down - Climber Down (Chin-up)
     controller.dpadDown.whileTrue(bot.climber.cmdClimbTogether(Climber.CLIMBER_DOWN_SPEED));
 
-    controller.rightTriggerB.onTrue(bot.led.setLedsToSolidColor(Color.kRed));
+    controller.rightTriggerB.onTrue(bot.led.setLedsToSolidColor(Color.kWhite));
     controller.rightTriggerB.onFalse(bot.led.setLedsToSolidColor(Color.kBlack));
 
   }
 
   // Operator Controls:
+  
   // Dpad Right - State Stash
   // Dpad Down - State Intake
   // Dpad Left - State Amp
