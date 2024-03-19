@@ -64,14 +64,14 @@ public class NewWrivot extends SubsystemBase {
     
     configurationPivot.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.4;
 
-    configurationPivot.Slot0.kP = 18.75;
+    configurationPivot.Slot0.kP = 60;
     configurationPivot.Slot0.kI = 0;
     configurationPivot.Slot0.kD = 0;
 
     // Use Slot 1 for downward motion, cause we are too lazy to figure out feedforward
-    configurationPivot.Slot1.kP = 1.8;
+    configurationPivot.Slot1.kP = 1.4;
     configurationPivot.Slot1.kI = 0.1;
-    configurationPivot.Slot1.kD = 0.38;
+    configurationPivot.Slot1.kD = 0.28;
 
     motorPivot1.getConfigurator().apply(configurationPivot);
     motorPivot2.getConfigurator().apply(configurationPivot);
