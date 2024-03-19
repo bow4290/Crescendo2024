@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,12 +40,20 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final NewWrivot wrivot = new NewWrivot();
     public final Climber climber = new Climber();
+    public final LED led = new LED();
     
     private SendableChooser<Command> autoChooser;
     private AutoCommands autoCommands;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        //testing
+        led.setLedsToSolidColor(Color.kBrown);
+
+
+
+
+
         autoCommands = new AutoCommands(shooter, intake, swerve, wrivot);
         // Configure the button bindings
         Controls.configureDriver(this);
