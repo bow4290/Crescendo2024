@@ -28,9 +28,9 @@ public class Controls {
     // Swerve w/ Right Bumper as RobotCentric
     bot.swerve.setDefaultCommand(new TeleopSwerve(            
         bot.swerve, 
-        () -> controller.leftY.getAsDouble(),
-        () -> controller.leftX.getAsDouble(),
-        () -> controller.rightX.getAsDouble(),
+        () -> -controller.leftY.getAsDouble(),
+        () -> -controller.leftX.getAsDouble(),
+        () -> -controller.rightX.getAsDouble(),
         () -> controller.rightBumper.getAsBoolean()
     ));
 

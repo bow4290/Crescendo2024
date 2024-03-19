@@ -22,11 +22,11 @@ import frc.robot.autos.AutoCommands;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    public final static double AUTO_TIMEOUT_INTAKE = 1.25;
+    public final static double AUTO_TIMEOUT_INTAKE = 1.75;
     public final static double AUTO_TIMEOUT_GRAB = 0.15;
     public final static double AUTO_TIMEOUT_DROP = 1;
-    public final static double AUTO_SHOOT_TIMEOUT = 2.5;
-    public final static double AUTO_STATE_TIMEOUT = 5;
+    public final static double AUTO_SHOOT_TIMEOUT = 2.25;
+    public final static double AUTO_STATE_TIMEOUT = 4.5;
 
     /* Controllers */
     public final GenericGamepad controllerDriver = GenericGamepad.from(0);
@@ -65,7 +65,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Intake", Commands.parallel(
           intake.cmdIntakeIn(),
           shooter.cmdShooterIntake()
-        ));
+        ).withTimeout(AUTO_TIMEOUT_INTAKE));
         NamedCommands.registerCommand("Shoot", shooter.cmdShootOut().withTimeout(AUTO_SHOOT_TIMEOUT));
 
         NamedCommands.registerCommand("Go To Stash", wrivot.cmdGoToState(BotStates.STASH).withTimeout(AUTO_STATE_TIMEOUT));

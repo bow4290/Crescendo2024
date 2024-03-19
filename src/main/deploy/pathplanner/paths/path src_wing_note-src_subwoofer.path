@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.3,
+        "y": 3.98
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.5581940222176414,
+        "y": 1.8958689038454317
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.7420004077676324,
+        "y": 4.371542375371746
+      },
+      "prevControl": {
+        "x": 0.5487322185406709,
+        "y": 4.702859271189395
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 103.11478003290769,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Go To Stash",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Go To Stash"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 120.2564371635293,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SrcSubwoofer 2 Note Leave (Note3)",
+  "previewStartingState": {
+    "rotation": 19.60734739864828,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
