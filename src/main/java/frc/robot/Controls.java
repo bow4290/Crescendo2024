@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -44,7 +43,6 @@ public class Controls {
   }
 
   // Operator Controls:
-
   // Dpad Right - State Stash
   // Dpad Down - State Intake
   // Dpad Left - State Amp
