@@ -13,7 +13,7 @@ public class LED extends SubsystemBase{
   private final AddressableLED led = new AddressableLED(pwmPort);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(ledLength);
   private double totalBrightness;
-  private final double maxTotalBrightness = 10;
+  private final double maxTotalBrightness = 1550;
   private double brightnessDivider;
 
   public LED() {
@@ -21,9 +21,14 @@ public class LED extends SubsystemBase{
     led.start();
   }
 
-  public void showLeds() {
-    powerLimitLeds();
-    led.setData(ledBuffer);
+  public void setLedBufferToSolidColor(Color color){
+    for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
+      ledBuffer.setLED(ledIndex, color);
+    }
+  }
+
+  public Command setLedsToSolidColor(Color color){
+    return runLeds(() -> setLedBufferToSolidColor(color));
   }
 
   public Command runLeds(Runnable action) {
@@ -35,14 +40,9 @@ public class LED extends SubsystemBase{
       .ignoringDisable(true);
   }
 
-  public void setLedBufferToSolidColor(Color color){
-    for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
-      ledBuffer.setLED(ledIndex, color);
-    }
-  }
-
-  public Command setLedsToSolidColor(Color color){
-    return runLeds(() -> setLedBufferToSolidColor(color));
+  public void showLeds() {
+    powerLimitLeds();
+    led.setData(ledBuffer);
   }
 
   public void powerLimitLeds() {
