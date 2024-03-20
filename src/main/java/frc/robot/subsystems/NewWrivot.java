@@ -106,7 +106,7 @@ public class NewWrivot extends SubsystemBase {
     STASH(0, 0),
     INTAKE(0, 126),
     SPEAKER(70, 0),
-    AMP(74.5, 164),
+    AMP(73, 164),
     SAFETY_PIVOT_STATE(PIVOT_W_CLEARANCE_DEG, 0),
     INBETWEEN(0, 0),
     AIMING(0, 0);
