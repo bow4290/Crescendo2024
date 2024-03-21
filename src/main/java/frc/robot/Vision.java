@@ -5,29 +5,38 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
+  private static final double limelightAngle = 32.5;
   //TO-DO: Find values in inches
   private static final double limelightHeightFromFloor = 1;
-  //Found
-  private static final double aprilTagHeightFromFloor = 56.875;
-  //TO-DO: Find values in degrees
-  private static final double limelightAngle = 1;
+  
+  // April tag height for speaker april tags
+  private static final double speakerAprilTagHeight = 56.875;
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-  public double getLimelightXAngleToTag(){
+  public static double getLimelightDistanceToTag(double aprilTagHeightFromFloor){
+    return (aprilTagHeightFromFloor - limelightHeightFromFloor) / Math.tan((getLimelightTY() + limelightAngle) * (3.14159 / 180.0));
+  }
+
+  public static double getLimelightTY(){
     NetworkTableEntry ty = table.getEntry("ty");
     return ty.getDouble(0.0);
   }
   
-  public double getLimelightYAngleToTag(){
+  public static double getLimelightTX(){
     NetworkTableEntry tx = table.getEntry("tx");
     return tx.getDouble(0.0);
   }
 
-  public double getLimelightDistanceToTag(){
-    return (aprilTagHeightFromFloor - limelightHeightFromFloor) / Math.tan((getLimelightXAngleToTag() + limelightAngle) * (3.14159 / 180.0));
+  public static boolean getLimelightTV(){
+    NetworkTableEntry tv = table.getEntry("tv");
+    return tv.getBoolean(false); 
   }
 
+  public static int getLimelightTID(){
+    NetworkTableEntry tid = table.getEntry("tid");
+    return (int) tid.getInteger(0);
+  }
 
   
 
