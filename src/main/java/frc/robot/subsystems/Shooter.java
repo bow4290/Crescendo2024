@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,6 +31,7 @@ public class Shooter extends SubsystemBase {
 
   private TalonFX motorShooter = new TalonFX(MOTOR_ID_SHOOTER);
   private TalonFX motorIndexer = new TalonFX(MOTOR_ID_INDEXER);
+  private DigitalInput buttonIndexer = new DigitalInput(9);
 
   final DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
   final VelocityVoltage velocityOut = new VelocityVoltage(0).withSlot(0);
@@ -113,6 +115,8 @@ public Shooter(){
     SmartDashboard.putNumber("Current Index Velocity", motorIndexer.getVelocity().getValueAsDouble());
 
     SmartDashboard.putNumber("Current Shooter Velocity (RPM)", motorShooter.getVelocity().getValueAsDouble() * 60);
+
+    SmartDashboard.putBoolean("Indexer Button (IS NOTE INTOOK)", !buttonIndexer.get());
 
   }
     
