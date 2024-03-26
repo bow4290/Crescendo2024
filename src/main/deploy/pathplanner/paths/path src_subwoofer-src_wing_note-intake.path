@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 2.2973491686893697,
-        "y": 3.9850059969178235
+        "x": 2.4231793192931113,
+        "y": 4.02278912819934
       },
       "prevControl": {
-        "x": 1.663059280534515,
-        "y": 3.8239885026778606
+        "x": 1.7888894311382566,
+        "y": 3.8617716339593775
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,6 +64,23 @@
               "type": "named",
               "data": {
                 "name": "Go To Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake Start",
+      "waypointRelativePos": 1.3,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
               }
             }
           ]
