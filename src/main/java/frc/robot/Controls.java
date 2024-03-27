@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.lib.GenericGamepad;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.NewWrivot.BotStates;
-import frc.robot.subsystems.WrivotStates.BotAngleState;
+import frc.robot.subsystems.OldSubsystems.Shooter;
+import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
+import frc.robot.subsystems.OldSubsystems.WrivotStates.BotAngleState;
 
 public class Controls {
 

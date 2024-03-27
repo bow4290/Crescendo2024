@@ -1,7 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import frc.robot.subsystems.NewWrivot;
+import frc.robot.subsystems.OldSubsystems.NewWrivot;
 
 /**
  * A class made to store all of our interpolation tables, using {@link InterpolatingDoubleTreeMap}.

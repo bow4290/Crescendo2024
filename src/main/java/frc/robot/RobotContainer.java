@@ -11,7 +11,10 @@ import com.pathplanner.lib.commands.*;
 
 import frc.lib.GenericGamepad;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.NewWrivot.BotStates;
+import frc.robot.subsystems.OldSubsystems.Intake;
+import frc.robot.subsystems.OldSubsystems.NewWrivot;
+import frc.robot.subsystems.OldSubsystems.Shooter;
+import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
 import frc.robot.autos.AutoCommands;
 
 

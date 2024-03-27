@@ -3,11 +3,11 @@ package frc.robot.autos;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.NewWrivot;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.NewWrivot.BotStates;
+import frc.robot.subsystems.OldSubsystems.Intake;
+import frc.robot.subsystems.OldSubsystems.NewWrivot;
+import frc.robot.subsystems.OldSubsystems.Shooter;
+import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
 
 public class AutoCommands {
   private Shooter auto_shooter;
