@@ -14,17 +14,17 @@ public class StateManager {
    */
   public enum BotState {
     STASH(0, 0),
-    INTAKE(0, 0),
+    INTAKE(0, 60),
     SPEAKER_BASE(0, 0),
     SPEAKER_AIMING(0, 0),
     AMP(0, 0),
     INBETWEEN(0, 0);
 
-    public final double speakerDegrees;
+    public final double pivotDegrees;
     public final double wristDegrees;
 
     private BotState(double speakerDegrees, double wristDegrees){
-      this.speakerDegrees = speakerDegrees;
+      this.pivotDegrees = speakerDegrees;
       this.wristDegrees = wristDegrees;
     }
   }

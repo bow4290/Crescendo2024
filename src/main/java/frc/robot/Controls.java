@@ -1,16 +1,16 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+
 import frc.lib.GenericGamepad;
+
+import frc.robot.StateManager.BotState;
+import frc.robot.commands.CmdTorqueTester;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.OldSubsystems.Shooter;
-import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
-import frc.robot.subsystems.OldSubsystems.WrivotStates.BotAngleState;
+import frc.robot.commands.CmdTorqueTester;
 
 public class Controls {
 
@@ -42,67 +42,45 @@ public class Controls {
 
   }
 
-  // Operator Controls:
-  // Dpad Right - State Stash
-  // Dpad Down - State Intake
-  // Dpad Left - State Amp
-  // Dpad Up - State Shoot
-  // Cross / A - Cancel Wrivot Action
-  // Left Trigger - Intake (All)
-  // Right Trigger - Shoot
   public static void configureOperator(RobotContainer bot){
     GenericGamepad controller = bot.controllerOperator;
 
-    // Cancel Wrivot Action
-    controller.cross_a.onTrue(Commands.runOnce(() -> bot.wrivot.endMotorRequests()));
+    // Smart intake
+    controller.leftBumper.whileTrue(bot.intake.cmdSmartIntake());
 
-    // Dpad Right - State Stash
-    controller.dpadRight.onTrue(bot.wrivot.cmdGoToState(BotStates.STASH)
-    .until(() -> controller.cross_a.getAsBoolean())
-    .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // Drop (intake out)
+    controller.rightBumper.whileTrue(bot.intake.cmdIntakeDrop());
 
-    // Dpad Down - State Intake
-    controller.dpadDown.onTrue(bot.wrivot.cmdGoToState(BotStates.INTAKE)
-    .until(() -> controller.cross_a.getAsBoolean())
-    .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // Shoot Out
+    controller.rightTriggerB.whileTrue(Commands.parallel(
+      new CmdTorqueTester(bot.shooter, bot.intake).andThen(
+        bot.shooter.cmdShootOut()
+      ),
+      Commands.waitUntil(() -> bot.shooter.isShooterSpeed(bot.shooter.SHOOTER_OUT_RPM)).andThen(bot.intake.cmdIntakeIn())
+    ));
 
-    // Dpad Left - State Amp
-    controller.dpadLeft.onTrue(bot.wrivot.cmdGoToState(BotStates.AMP)
-    .until(() -> controller.cross_a.getAsBoolean())
-    .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // Cancel Pivot + Wrist actions and PID
+    controller.cross_a.onTrue(Commands.runOnce(() -> bot.pivot.pivotStop()).andThen(() -> bot.wrist.wristStop()));
 
-    // Dpad Up - State Speaker
-    controller.dpadUp.onTrue(bot.wrivot.cmdGoToState(BotStates.SPEAKER)
-    .until(() -> controller.cross_a.getAsBoolean())
-    .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // Set State: Stash
+    controller.dpadRight.onTrue(wrivotSequence(BotState.STASH, bot));
 
-    // Options - Manual Pivot Up 
-    controller.rightMiddle.whileTrue(bot.wrivot.cmdDrivePivot(0.4));
-    // Share - Manual Pivot Down
-    controller.leftMiddle.whileTrue(bot.wrivot.cmdDrivePivot(-0.3));
+    // Set State: Intake
+    controller.dpadDown.onTrue(wrivotSequence(BotState.INTAKE, bot));
 
-    // L3 / Left Joystick Push - Zero Wrivot
-    controller.leftJoystickPushed.onTrue(new InstantCommand(() -> bot.wrivot.zeroWrivot()));
+    // Set State: Speaker Base
+    controller.dpadUp.onTrue(wrivotSequence(BotState.SPEAKER_BASE, bot));
 
-    // Left Bumper - Intake Grab
-    controller.leftBumper.whileTrue(bot.intake.cmdIntakeGrab());
+    // Set State: Amp
+    controller.dpadLeft.onTrue(wrivotSequence(BotState.AMP, bot));
+  }
 
-    // Right Bumper - Intake Drop / Throw
-    controller.rightBumper.whileTrue(bot.intake.cmdIntakeOut());
-
-    // Left Trigger - Intake
-    controller.leftTriggerB.onTrue(Commands.parallel(
-      bot.intake.cmdIntakeIn().until(() -> {return !controller.leftTriggerB.getAsBoolean();}),
-      bot.shooter.cmdShooterIntake().until(() -> {return !controller.leftTriggerB.getAsBoolean();})
-      ));
-    
-    // Circle / B - Shooter Prespin
-    controller.circle_b.onTrue(bot.shooter.cmdStartShooter(Shooter.SHOOTER_PRESPIN_RPM));
-      
-    // Right Trigger - Shoot
-    controller.rightTriggerB.whileTrue(bot.shooter.cmdShootOut());
-    
-
+  public static Command wrivotSequence(BotState targetState, RobotContainer botInstance){
+    return Commands.sequence(
+      // botInstance.wrist.cmdWristToDeg(BotState.STASH.wristDegrees).until(() -> botInstance.wrist.isWristFinished(BotState.STASH.wristDegrees)),
+      // botInstance.pivot.cmdPivotToDeg(targetState.pivotDegrees).until(() -> botInstance.pivot.isPivotFinished(targetState.pivotDegrees)),
+      botInstance.wrist.cmdWristToDeg(targetState.wristDegrees).until(() -> botInstance.wrist.isWristFinished(targetState.wristDegrees))
+      );
   }
     
 }

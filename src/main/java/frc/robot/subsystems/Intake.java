@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,14 +11,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
   public static final int MOTOR_ID_INTAKE = 9;
+  public static final int INDEXER_ID_1 = 0;
+  public static final int INDEXER_ID_2 = 2;
 
   public static final double INTAKE_IN_SPEED = 0.2;
   public static final double INTAKE_INDEX_SPEED = 0.4;
+  public static final double INTAKE_INDEX_BACK_SPEED = -0.15;
   public static final double INTAKE_DROP_SPEED = -0.6;
 
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
+  private DigitalInput indexer1 = new DigitalInput(INDEXER_ID_1);
+  private DigitalInput indexer2 = new DigitalInput(INDEXER_ID_2);
 
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
+
+  public Command cmdSmartIntake(){
+    return cmdIntakeIn().until(() -> isNoteIndexed());
+  }
   
   /**
    * Runs intake in to intake.
@@ -43,17 +53,19 @@ public class Intake extends SubsystemBase {
     });
   }
 
-  /**
-   * Runs intake in to kick into shooter. 
-   * @return Command
-   */
-  public Command cmdIndex(){
-    return this.startEnd(() -> {
-      motorIntake.setControl(dutyCycleOut.withOutput(INTAKE_INDEX_SPEED));
-    }, () -> {
-      motorIntake.stopMotor();
-    });
+  public void runIntakeBackup(){
+    motorIntake.set(INTAKE_INDEX_BACK_SPEED);
   }
+
+  public void intakeStop(){
+    motorIntake.stopMotor();
+  }
+
+  public boolean isNoteIndexed(){
+    return (!indexer1.get() || !indexer2.get()) ? true : false;
+
+  }
+
 
   @Override
   public void periodic() {

@@ -3,19 +3,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.*;
-import com.pathplanner.lib.commands.*;
 
 import frc.lib.GenericGamepad;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.OldSubsystems.Intake;
-import frc.robot.subsystems.OldSubsystems.NewWrivot;
-import frc.robot.subsystems.OldSubsystems.Shooter;
-import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
-import frc.robot.autos.AutoCommands;
 
 
 /**
@@ -40,44 +32,19 @@ public class RobotContainer {
     public final Swerve swerve = new Swerve();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
-    public final NewWrivot wrivot = new NewWrivot();
     public final Climber climber = new Climber();
+    public final Pivot pivot = new Pivot();
+    public final Wrist wrist = new Wrist();
     
     private SendableChooser<Command> autoChooser;
-    private AutoCommands autoCommands;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        autoCommands = new AutoCommands(shooter, intake, swerve, wrivot);
         // Configure the button bindings
         Controls.configureDriver(this);
         Controls.configureOperator(this);
 
-        // Register Name Commands
-        NamedCommands.registerCommand("Intake Full", Commands.parallel(
-          intake.cmdIntakeIn(),
-          shooter.cmdShooterIntake()
-        ).withTimeout(AUTO_TIMEOUT_INTAKE));
-
-        NamedCommands.registerCommand("Intake Grab", intake.cmdIntakeGrab().withTimeout(AUTO_TIMEOUT_GRAB));
-        NamedCommands.registerCommand("Intake Drop", intake.cmdIntakeOut().withTimeout(AUTO_TIMEOUT_DROP));
-
-        NamedCommands.registerCommand("Prespin Shooter", shooter.cmdStartShooter(Shooter.SHOOTER_PRESPIN_RPM));
-        NamedCommands.registerCommand("Stop Shooter", shooter.cmdStopShooter());
-
-        NamedCommands.registerCommand("Intake", Commands.parallel(
-          intake.cmdIntakeIn(),
-          shooter.cmdShooterIntake()
-        ).withTimeout(AUTO_TIMEOUT_INTAKE));
-        NamedCommands.registerCommand("Shoot", shooter.cmdShootOut().withTimeout(AUTO_SHOOT_TIMEOUT));
-
-        NamedCommands.registerCommand("Go To Stash", wrivot.cmdGoToState(BotStates.STASH).withTimeout(AUTO_STATE_TIMEOUT));
-        NamedCommands.registerCommand("Go To Intake", wrivot.cmdGoToState(BotStates.INTAKE).withTimeout(AUTO_STATE_TIMEOUT));
-        NamedCommands.registerCommand("Go To Speaker", wrivot.cmdGoToState(BotStates.SPEAKER).withTimeout(AUTO_STATE_TIMEOUT));
-        NamedCommands.registerCommand("Go To Amp", wrivot.cmdGoToState(BotStates.AMP).withTimeout(AUTO_STATE_TIMEOUT));
-
         autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser.addOption("HARDCODED Speaker Base Shoot", autoCommands.ShootSpeakerBase());
 
         SmartDashboard.putData("Auto Picker", autoChooser);
     }

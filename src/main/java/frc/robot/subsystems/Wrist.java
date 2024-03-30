@@ -6,16 +6,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
-import frc.robot.subsystems.OldSubsystems.NewWrivot.BotStates;
 
 public class Wrist extends SubsystemBase {
 
   public static final int MOTOR_ID_WRIST = 15;
 
-  public static final double GEAR_RATIO_WRIST = 18.75/1;
+  public static final double GEAR_RATIO_WRIST = 27.5/1;
 
   public static final double TOLERANCE = 0.2; 
 
@@ -38,15 +38,16 @@ public class Wrist extends SubsystemBase {
     configurationWrist.Slot0.kS = 0;
     configurationWrist.Slot0.kV = 0;
     configurationWrist.Slot0.kA = 0;
-    configurationWrist.Slot0.kP = 0.35;
+    configurationWrist.Slot0.kP = 20;
     configurationWrist.Slot0.kI = 0;
     configurationWrist.Slot0.kD = 0;
 
-    configurationWrist.MotionMagic.MotionMagicCruiseVelocity = 10;
-    configurationWrist.MotionMagic.MotionMagicAcceleration = 20;
-    configurationWrist.MotionMagic.MotionMagicJerk = 200;
+    configurationWrist.MotionMagic.MotionMagicCruiseVelocity = 1;
+    configurationWrist.MotionMagic.MotionMagicAcceleration = 4;
+    configurationWrist.MotionMagic.MotionMagicJerk = 25;
 
     motorWrist.getConfigurator().apply(configurationWrist);
+    motorWrist.setPosition(0);
   }
 
   public Command cmdWristToDeg(double targetDegrees){
@@ -65,6 +66,12 @@ public class Wrist extends SubsystemBase {
 
   public void wristStop(){
     motorWrist.stopMotor();
+  }
+
+  @Override
+  public void periodic(){
+    SmartDashboard.putNumber("Wrist Rotations (With GR)", motorWrist.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Wrist Rotations (Raw)", motorWrist.getRotorPosition().getValueAsDouble());
   }
 
 

@@ -60,6 +60,7 @@ public class Pivot extends SubsystemBase {
     motorPivot1.getConfigurator().apply(configurationPivot);
     motorPivot2.getConfigurator().apply(configurationPivot);
     motorPivot1.setPosition(0);
+    motorPivot2.setPosition(0);
     motorPivot2.setControl(new Follower(motorPivot1.getDeviceID(), false));
   }
 
