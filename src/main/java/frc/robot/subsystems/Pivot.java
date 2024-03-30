@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
@@ -33,6 +34,8 @@ public class Pivot extends SubsystemBase {
     TalonFXConfiguration configurationPivot = new TalonFXConfiguration();
 
     configurationPivot.Audio.BeepOnBoot = true;
+
+    configurationPivot.Feedback.SensorToMechanismRatio = GEAR_RATIO_PIVOT;
 
     configurationPivot.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configurationPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -61,19 +64,30 @@ public class Pivot extends SubsystemBase {
   }
 
   public Command cmdPivotToDeg(double targetDegrees){
-    double positionRotations = Conversions.degToRotationsGearRatio(targetDegrees, GEAR_RATIO_PIVOT);
+    double targetRotations = Conversions.degToRotations(targetDegrees);
 
     return this.startEnd(() -> {
-      motorPivot1.setControl(motionMagicVoltage.withSlot(0).withPosition(positionRotations));
+      motorPivot1.setControl(motionMagicVoltage.withSlot(0).withPosition(targetRotations));
     }, () -> {
 
     });
   }
 
-  private boolean isPivotFinished(double targetDegrees){
-    double targetRotations = Conversions.degToRotationsGearRatio(targetDegrees, GEAR_RATIO_PIVOT);
+  public boolean isPivotFinished(double targetDegrees){
+    double targetRotations = Conversions.degToRotations(targetDegrees);
 
     return MathUtil.isNear(targetRotations, motorPivot1.getPosition().getValueAsDouble(), TOLERANCE);
+  }
+
+  public void pivotStop(){
+    motorPivot1.stopMotor();
+    motorPivot2.stopMotor();
+  }
+
+  @Override
+  public void periodic(){
+    SmartDashboard.putNumber("Pivot Rotations (With GR)", motorPivot1.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Pivot Rotations (Raw)", motorPivot1.getRotorPosition().getValueAsDouble());
   }
   
 }
