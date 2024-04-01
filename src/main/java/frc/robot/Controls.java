@@ -30,7 +30,7 @@ public class Controls {
         bot.swerve, 
         () -> -controller.leftY.getAsDouble(),
         () -> -controller.leftX.getAsDouble(),
-        () -> -controller.rightX.getAsDouble(),
+        () -> getWantedRotationalValue(false, -controller.rightX.getAsDouble(), 0.0, controller),
         () -> controller.rightBumper.getAsBoolean()
     ));
 
@@ -81,6 +81,13 @@ public class Controls {
       // botInstance.pivot.cmdPivotToDeg(targetState.pivotDegrees).until(() -> botInstance.pivot.isPivotFinished(targetState.pivotDegrees)),
       botInstance.wrist.cmdWristToDeg(targetState.wristDegrees).until(() -> botInstance.wrist.isWristFinished(targetState.wristDegrees))
       );
+  }
+
+  private static double getWantedRotationalValue(boolean disregardJoystick, double joystickValue, double wantedRotation, GenericGamepad controller){
+    return (disregardJoystick) ? 
+        0
+      : 
+        joystickValue;
   }
     
 }
