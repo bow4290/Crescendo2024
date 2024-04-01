@@ -59,4 +59,8 @@ public class RobotContainer {
       // An ExampleCommand will run in autonomous
       return autoChooser.getSelected();
     }
+
+    public void robotContainerPeriodic(){
+      SmartDashboard.putNumber("Limelight Distance to Speaker", Vision.getLimelightDistanceToTag(Vision.SPEAKER_APRIL_TAG_HEIGHT));
+    }
 }

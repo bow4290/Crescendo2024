@@ -101,7 +101,7 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic(){
-    SmartDashboard.putNumber("Climber 1 Motor Raw Pos", motorClimber1.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Climber 2 Motor Raw Pos", motorClimber2.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber Motor 1 Pos (Raw)", motorClimber1.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber Motor 2 Pos (Raw)", motorClimber2.getPosition().getValueAsDouble());
   }  
 }

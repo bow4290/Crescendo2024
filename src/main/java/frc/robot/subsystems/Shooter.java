@@ -83,10 +83,11 @@ public class Shooter extends SubsystemBase {
   public void periodic(){
     currentTorqueFiltered = torqueFilter.calculate(motorShooter1.getTorqueCurrent().getValueAsDouble());
 
-    SmartDashboard.putNumber("Current Shooter1 RPM", motorShooter1.getVelocity().getValueAsDouble() * 60);
-    SmartDashboard.putNumber("Current Shooter2 RPM", motorShooter2.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Current Shooter 1 RPM", motorShooter1.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Current Shooter 2 RPM", motorShooter2.getVelocity().getValueAsDouble() * 60);
 
-    SmartDashboard.putNumber("Current Shooter1 Torque Current", motorShooter1.getTorqueCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Current Shooter 1 Torque Current", motorShooter1.getTorqueCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Current Shooter 2 Torque Current", motorShooter2.getTorqueCurrent().getValueAsDouble());
   }
   
 }
