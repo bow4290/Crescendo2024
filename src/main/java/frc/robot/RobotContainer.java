@@ -35,6 +35,7 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     public final Pivot pivot = new Pivot();
     public final Wrist wrist = new Wrist();
+    public final LED led = new LED();
     
     private SendableChooser<Command> autoChooser;
 
