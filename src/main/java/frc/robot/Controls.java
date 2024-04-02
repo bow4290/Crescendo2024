@@ -7,11 +7,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.GenericGamepad;
 
 import frc.robot.StateManager.BotState;
-import frc.robot.commands.CmdTorqueTester;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
-import frc.robot.commands.CmdTorqueTester;
+
 
 public class Controls {
 
