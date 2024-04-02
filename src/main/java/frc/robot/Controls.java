@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.lib.GenericGamepad;
-
+import frc.lib.math.Conversions;
 import frc.robot.StateManager.BotState;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
@@ -61,24 +61,32 @@ public class Controls {
     controller.cross_a.onTrue(Commands.runOnce(() -> bot.pivot.pivotStop()).andThen(() -> bot.wrist.wristStop()));
 
     // Set State: Stash
-    controller.dpadRight.onTrue(wrivotSequence(BotState.STASH, bot));
+    controller.dpadRight.onTrue(fullSequence(BotState.STASH, bot).until(() -> controller.cross_a.getAsBoolean()));
 
     // Set State: Intake
-    controller.dpadDown.onTrue(wrivotSequence(BotState.INTAKE, bot));
+    controller.dpadDown.onTrue(fullSequence(BotState.INTAKE, bot).until(() -> controller.cross_a.getAsBoolean()));
 
     // Set State: Speaker Base
-    controller.dpadUp.onTrue(wrivotSequence(BotState.SPEAKER_BASE, bot));
+    controller.dpadUp.onTrue(fullSequence(BotState.SPEAKER_BASE, bot).until(() -> controller.cross_a.getAsBoolean()));
 
     // Set State: Amp
-    controller.dpadLeft.onTrue(wrivotSequence(BotState.AMP, bot));
+    controller.dpadLeft.onTrue(fullSequence(BotState.AMP, bot).until(() -> controller.cross_a.getAsBoolean()));
   }
 
-  public static Command wrivotSequence(BotState targetState, RobotContainer botInstance){
+  public static Command fullSequence(BotState targetState, RobotContainer botInstance){
+    boolean condition = botInstance.pivot.getPivotMotorRotations() > Conversions.degToRotations(8);
     return Commands.sequence(
-      // botInstance.wrist.cmdWristToDeg(BotState.STASH.wristDegrees).until(() -> botInstance.wrist.isWristFinished(BotState.STASH.wristDegrees)),
-      // botInstance.pivot.cmdPivotToDeg(targetState.pivotDegrees).until(() -> botInstance.pivot.isPivotFinished(targetState.pivotDegrees)),
+      botInstance.wrist.cmdWristToDeg(BotState.STASH.wristDegrees).onlyIf(() -> condition).until(() -> botInstance.wrist.isWristFinished(BotState.STASH.wristDegrees)),
+      botInstance.pivot.cmdPivotToDeg(targetState.pivotDegrees).until(() -> botInstance.pivot.isPivotFinished(targetState.pivotDegrees)),
       botInstance.wrist.cmdWristToDeg(targetState.wristDegrees).until(() -> botInstance.wrist.isWristFinished(targetState.wristDegrees))
       );
+  }
+
+  public static Command wristCentricSequence(BotState targetState, RobotContainer botInstance){
+    return Commands.sequence(
+      botInstance.pivot.cmdPivotToDeg(targetState.pivotDegrees).until(() -> botInstance.pivot.isPivotFinished(targetState.pivotDegrees)),
+      botInstance.wrist.cmdWristToDeg(targetState.wristDegrees).until(() -> botInstance.wrist.isWristFinished(targetState.wristDegrees))
+    );
   }
     
 }

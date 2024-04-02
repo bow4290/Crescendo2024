@@ -80,6 +80,10 @@ public class Pivot extends SubsystemBase {
     return MathUtil.isNear(targetRotations, motorPivot1.getPosition().getValueAsDouble(), TOLERANCE);
   }
 
+  public double getPivotMotorRotations(){
+    return motorPivot1.getPosition().getValueAsDouble();
+  }
+
   public void pivotStop(){
     motorPivot1.stopMotor();
     motorPivot2.stopMotor();

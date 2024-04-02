@@ -21,7 +21,6 @@ public class Intake extends SubsystemBase {
 
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
   private DigitalInput indexer1 = new DigitalInput(INDEXER_ID_1);
-  private DigitalInput indexer2 = new DigitalInput(INDEXER_ID_2);
 
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
@@ -62,8 +61,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isNoteIndexed(){
-    return (!indexer1.get() || !indexer2.get()) ? true : false;
-
+    return !indexer1.get();
   }
 
 
