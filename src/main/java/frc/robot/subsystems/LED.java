@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,10 +14,16 @@ public class LED extends SubsystemBase{
   private final AddressableLED led = new AddressableLED(pwmPort);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(ledLength);
   private final double maxTotalBrightness = 1500;
+  public double trackTime = 0;
 
   public LED() {
     led.setLength(ledLength);
     led.start();
+  }
+
+  // Run on true for flashing so the time for tracking how long to do something is known.
+  public void getTime(){
+    this.trackTime = Timer.getFPGATimestamp();
   }
 
   public Command setLedsToSolidColor(Color color){
@@ -30,16 +36,25 @@ public class LED extends SubsystemBase{
     }
   }
 
-  public Command setLedsToFlashColor(Color color){
-    return runLeds(() -> setLedBufferToFlashColor(color));
+  public Command setLedsToFlashAlternatingColor(Color color){
+    return runLeds(() -> setLedBufferToFlashAlternatingColor(color));
   }
 
-  public void setLedBufferToFlashColor(Color color){
+  public void setLedBufferToFlashAlternatingColor(Color color){
     int seconds = (int)Timer.getFPGATimestamp();
     for (int ledIndex = 0; ledIndex < ledLength; ledIndex++) {
       if (ledIndex % 2 == seconds % 2) {
         ledBuffer.setLED(ledIndex, color);
       }
+    }
+  }
+
+  public void setLedBufferToFlashColor(Color color, double timeInSeconds){
+    double currentTime = Timer.getFPGATimestamp();
+    if(trackTime < currentTime-timeInSeconds){
+      setLedBufferToSolidColor(color);
+    } else {
+      setLedBufferToSolidColor(Color.kBlack);
     }
   }
 
