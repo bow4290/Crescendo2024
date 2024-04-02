@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.pathplanner.lib.auto.*;
 
 import frc.lib.GenericGamepad;
+import frc.robot.StateManager.BotState;
 import frc.robot.subsystems.*;
 
 
@@ -18,9 +19,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     public final static double AUTO_TIMEOUT_INTAKE = 1.75;
-    public final static double AUTO_TIMEOUT_GRAB = 0.15;
-    public final static double AUTO_TIMEOUT_DROP = 1;
-    public final static double AUTO_SHOOT_TIMEOUT = 2.25;
+    public final static double AUTO_TIMEOUT_DROP = 0.25;
+    public final static double AUTO_SHOOT_TIMEOUT = 2.5;
     public final static double AUTO_STATE_TIMEOUT = 4.5;
 
     /* Controllers */
@@ -44,6 +44,15 @@ public class RobotContainer {
         // Configure the button bindings
         Controls.configureDriver(this);
         Controls.configureOperator(this);
+
+        NamedCommands.registerCommand("Auto Intake", intake.cmdSmartIntake());
+        NamedCommands.registerCommand("Intake Drop", intake.cmdIntakeDrop().withTimeout(AUTO_TIMEOUT_DROP));
+        NamedCommands.registerCommand("Shoot", Controls.autoShootOut(this).withTimeout(AUTO_SHOOT_TIMEOUT));
+
+        NamedCommands.registerCommand("State Stash", Controls.fullSequence(BotState.STASH, this));
+        NamedCommands.registerCommand("State Intake", Controls.fullSequence(BotState.INTAKE, this));
+        NamedCommands.registerCommand("State Speaker", Controls.fullSequence(BotState.SPEAKER_BASE, this));
+        NamedCommands.registerCommand("State Amp", Controls.fullSequence(BotState.AMP, this));
 
         autoChooser = AutoBuilder.buildAutoChooser();
 

@@ -42,6 +42,16 @@ public class Controls {
 
   }
 
+  // Operator Controls:
+  // Left Bumper - Intake
+  // Right Bumper - Drop (Intake out)
+  // Left Trigger - Shoot
+  // Right Trigger - Aim (NOT YET IMPLEMENTED)
+  // Cross / A - Cancel Wrivot
+  // Dpad Right - State Stash
+  // Dpad Down - State Intake
+  // Dpad Left - State Amp
+  // Dpad Up - State Speaker Base
   public static void configureOperator(RobotContainer bot){
     GenericGamepad controller = bot.controllerOperator;
 
@@ -52,10 +62,7 @@ public class Controls {
     controller.rightBumper.whileTrue(bot.intake.cmdIntakeDrop());
 
     // Shoot Out
-    controller.rightTriggerB.whileTrue(Commands.parallel(
-      bot.shooter.cmdShootOut(),
-      Commands.waitUntil(() -> bot.shooter.isShooterSpeed(Shooter.SHOOTER_OUT_RPM)).withTimeout(2.5).andThen(bot.intake.cmdIntakeIn())
-    ));
+    controller.rightTriggerB.whileTrue(autoShootOut(bot));
 
     // Cancel Pivot + Wrist actions and PID
     controller.cross_a.onTrue(Commands.runOnce(() -> bot.pivot.pivotStop()).andThen(() -> bot.wrist.wristStop()));
@@ -71,6 +78,13 @@ public class Controls {
 
     // Set State: Amp
     controller.dpadLeft.onTrue(fullSequence(BotState.AMP, bot).until(() -> controller.cross_a.getAsBoolean()));
+  }
+
+  public static Command autoShootOut(RobotContainer botInstance){
+    return Commands.parallel(
+      botInstance.shooter.cmdShootOut(),
+      Commands.waitUntil(() -> botInstance.shooter.isShooterSpeed(Shooter.SHOOTER_OUT_RPM)).withTimeout(2.25).andThen(botInstance.intake.cmdIntakeIn())
+    );
   }
 
   public static Command fullSequence(BotState targetState, RobotContainer botInstance){
