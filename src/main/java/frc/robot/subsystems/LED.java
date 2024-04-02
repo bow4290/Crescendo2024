@@ -20,11 +20,6 @@ public class LED extends SubsystemBase{
     led.start();
   }
 
-  // Run on true for flashing so the time for tracking how long to do something is known.
-  public void getTime(){
-    this.trackTime = Timer.getFPGATimestamp();
-  }
-
   public Command setLedsToSolidColor(Color color){
     return runLeds(() -> setLedBufferToSolidColor(color));
   }
@@ -48,13 +43,18 @@ public class LED extends SubsystemBase{
     }
   }
 
-  public void setLedBufferToFlashColor(Color color, double timeInSeconds){
+  public void setLedBufferToFlashColorOnce(Color color, double timeInSeconds){
     double currentTime = Timer.getFPGATimestamp();
-    if(trackTime < currentTime-timeInSeconds){
+    if(this.trackTime < currentTime-timeInSeconds){
       setLedBufferToSolidColor(color);
     } else {
       setLedBufferToSolidColor(Color.kBlack);
     }
+  }
+
+  public Command setLedToFlashColorOnce(Color color, double timeInSeconds) {
+    this.trackTime = Timer.getFPGATimestamp();
+    return runLeds(() -> setLedBufferToFlashColorOnce(color, timeInSeconds));
   }
 
   public Command runLeds(Runnable action) {
