@@ -30,7 +30,7 @@ public class Controls {
         bot.swerve, 
         () -> -controller.leftY.getAsDouble(),
         () -> -controller.leftX.getAsDouble(),
-        () -> getWantedRotationalValue(false, -controller.rightX.getAsDouble(), 0.0, controller),
+        () -> getWantedRotationalValue(bot, false, -controller.rightX.getAsDouble(), 0.0, controller),
         () -> controller.rightBumper.getAsBoolean()
     ));
 
@@ -83,9 +83,9 @@ public class Controls {
       );
   }
 
-  private static double getWantedRotationalValue(boolean disregardJoystick, double joystickValue, double wantedRotation, GenericGamepad controller){
+  private static double getWantedRotationalValue(RobotContainer bot, boolean disregardJoystick, double joystickValue, double wantedRotation, GenericGamepad controller){
     return (disregardJoystick) ? 
-        0
+        bot.swerve.getWantedFixedRotationalValue(wantedRotation)
       : 
         joystickValue;
   }

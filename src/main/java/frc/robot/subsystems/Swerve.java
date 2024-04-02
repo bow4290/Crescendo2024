@@ -152,6 +152,10 @@ public class Swerve extends SubsystemBase {
       }
     }
 
+    public double getWantedFixedRotationalValue(double wantedRotation) {
+        return SwerveConstants.Swerve.rotationalProportionalConstant * (wantedRotation - getHeading().getDegrees()) / 360;
+    }
+
     @Override
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
