@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -79,6 +80,12 @@ public class Controls {
     // Set State: Amp
     controller.dpadLeft.onTrue(fullSequence(BotState.AMP, bot).until(() -> controller.cross_a.getAsBoolean()));
   }
+
+  public static void configureRobot(RobotContainer bot){
+    bot.intake.noteTrigger.whileFalse(bot.led.setLedToFlashColorOnce(Color.kAliceBlue, 1));
+    bot.intake.noteTrigger.onTrue(bot.led.setLedsToSolidColor(Color.kBlack));
+  }
+
 
   public static Command autoShootOut(RobotContainer botInstance){
     return Commands.parallel(

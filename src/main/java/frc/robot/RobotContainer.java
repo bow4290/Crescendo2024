@@ -44,6 +44,7 @@ public class RobotContainer {
         // Configure the button bindings
         Controls.configureDriver(this);
         Controls.configureOperator(this);
+        Controls.configureRobot(this);
 
         NamedCommands.registerCommand("Auto Intake", intake.cmdSmartIntake());
         NamedCommands.registerCommand("Intake Drop", intake.cmdIntakeDrop().withTimeout(AUTO_TIMEOUT_DROP));

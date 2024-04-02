@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Intake extends SubsystemBase {
 
   public static final int MOTOR_ID_INTAKE = 9;
-  public static final int INDEXER_ID_1 = 0;
-  public static final int INDEXER_ID_2 = 2;
+  public static final int NOTE_SENSOR_DIO_ID = 0;
 
   public static final double INTAKE_IN_SPEED = 0.5;
   public static final double INTAKE_INDEX_SPEED = 0.4;
@@ -20,7 +20,8 @@ public class Intake extends SubsystemBase {
   public static final double INTAKE_DROP_SPEED = -0.6;
 
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
-  private DigitalInput indexer1 = new DigitalInput(INDEXER_ID_1);
+  private DigitalInput noteSensor = new DigitalInput(NOTE_SENSOR_DIO_ID);
+  public Trigger noteTrigger = new Trigger(noteSensor::get);
 
   private DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
@@ -61,7 +62,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isNoteIndexed(){
-    return !indexer1.get();
+    return !noteSensor.get();
   }
 
 
