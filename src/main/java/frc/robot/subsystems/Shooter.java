@@ -41,9 +41,9 @@ public class Shooter extends SubsystemBase {
 
     configurationShooter.Slot0.kS = 0.05;
     configurationShooter.Slot0.kV = 0.12;
-    configurationShooter.Slot0.kP = 2.1;
+    configurationShooter.Slot0.kP = 5;
     configurationShooter.Slot0.kI = 0.0;
-    configurationShooter.Slot0.kD = 0;
+    configurationShooter.Slot0.kD = 0.2;
 
     motorShooter1.getConfigurator().apply(configurationShooter);
     motorShooter2.getConfigurator().apply(configurationShooter);

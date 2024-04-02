@@ -10,6 +10,7 @@ import frc.robot.StateManager.BotState;
 import frc.robot.commands.CmdTorqueTester;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 import frc.robot.commands.CmdTorqueTester;
 
 public class Controls {
@@ -53,10 +54,8 @@ public class Controls {
 
     // Shoot Out
     controller.rightTriggerB.whileTrue(Commands.parallel(
-      new CmdTorqueTester(bot.shooter, bot.intake).andThen(
-        bot.shooter.cmdShootOut()
-      ),
-      Commands.waitUntil(() -> bot.shooter.isShooterSpeed(bot.shooter.SHOOTER_OUT_RPM)).andThen(bot.intake.cmdIntakeIn())
+      bot.shooter.cmdShootOut(),
+      Commands.waitUntil(() -> bot.shooter.isShooterSpeed(Shooter.SHOOTER_OUT_RPM)).withTimeout(2.5).andThen(bot.intake.cmdIntakeIn())
     ));
 
     // Cancel Pivot + Wrist actions and PID
