@@ -14,7 +14,7 @@ public class Intake extends SubsystemBase {
   public static final int INDEXER_ID_1 = 0;
   public static final int INDEXER_ID_2 = 2;
 
-  public static final double INTAKE_IN_SPEED = 0.2;
+  public static final double INTAKE_IN_SPEED = 0.5;
   public static final double INTAKE_INDEX_SPEED = 0.4;
   public static final double INTAKE_INDEX_BACK_SPEED = -0.15;
   public static final double INTAKE_DROP_SPEED = -0.6;

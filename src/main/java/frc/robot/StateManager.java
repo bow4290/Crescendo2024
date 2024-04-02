@@ -14,10 +14,10 @@ public class StateManager {
    */
   public enum BotState {
     STASH(0, 0),
-    INTAKE(0, 60),
+    INTAKE(0, 108),
     SPEAKER_BASE(0, 0),
     SPEAKER_AIMING(0, 0),
-    AMP(0, 0),
+    AMP(0, 50),
     INBETWEEN(0, 0);
 
     public final double pivotDegrees;

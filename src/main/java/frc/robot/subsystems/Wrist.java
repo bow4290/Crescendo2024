@@ -35,16 +35,15 @@ public class Wrist extends SubsystemBase {
     configurationWrist.MotorOutput.PeakReverseDutyCycle = -0.3;
 
     // TODO: Tune these values (all)
-    configurationWrist.Slot0.kS = 0;
-    configurationWrist.Slot0.kV = 0;
-    configurationWrist.Slot0.kA = 0;
+    configurationWrist.Slot0.kS = 1.8;
+    configurationWrist.Slot0.kV = 0.12;
+    configurationWrist.Slot0.kA = 0.1;
     configurationWrist.Slot0.kP = 20;
     configurationWrist.Slot0.kI = 0;
-    configurationWrist.Slot0.kD = 0;
+    configurationWrist.Slot0.kD = 4;
 
     configurationWrist.MotionMagic.MotionMagicCruiseVelocity = 1;
-    configurationWrist.MotionMagic.MotionMagicAcceleration = 4;
-    configurationWrist.MotionMagic.MotionMagicJerk = 25;
+    configurationWrist.MotionMagic.MotionMagicAcceleration = 3;
 
     motorWrist.getConfigurator().apply(configurationWrist);
     motorWrist.setPosition(0);
