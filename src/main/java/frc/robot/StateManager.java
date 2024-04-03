@@ -11,13 +11,14 @@ public class StateManager {
    * An enum used to store current bot state, as well as target positions for both pivot and wrist in that state (in degrees).
    * 
    * @apiNote (pivotDegrees, wristDegrees)
+   * @apiNote Wrist degrees are from a somewhat horizontal position, this is because of needing gravity feedforward.
    */
   public enum BotState {
-    STASH(0, 0),
-    INTAKE(0, 108),
-    SPEAKER_BASE(0, 65),
+    STASH(0, 111),
+    INTAKE(0, -23),
+    SPEAKER_BASE(0, 30),
+    AMP(0, 95),
     SPEAKER_AIMING(0, 0),
-    AMP(0, 0),
     INBETWEEN(0, 0);
 
     public final double pivotDegrees;

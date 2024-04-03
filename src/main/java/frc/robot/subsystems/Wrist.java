@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,7 +19,10 @@ public class Wrist extends SubsystemBase {
 
   public static final double GEAR_RATIO_WRIST = 27.5/1;
 
-  public static final double TOLERANCE = 0.2; 
+  // Wrist zero is set to be more horizontal so that gravity feedforward works, making this the mech stop offset
+  public static final double MECH_STOP_OFFSET = 0.309;
+
+  public static final double TOLERANCE = 0.15; 
 
   final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
 
@@ -30,11 +35,14 @@ public class Wrist extends SubsystemBase {
 
     configurationWrist.Feedback.SensorToMechanismRatio = GEAR_RATIO_WRIST;
 
+    configurationWrist.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configurationWrist.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configurationWrist.MotorOutput.PeakForwardDutyCycle = 0.5;
     configurationWrist.MotorOutput.PeakReverseDutyCycle = -0.3;
 
     // TODO: Tune these values (all)
+    configurationWrist.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    configurationWrist.Slot0.kG = 1;
     configurationWrist.Slot0.kS = 1.8;
     configurationWrist.Slot0.kV = 0.12;
     configurationWrist.Slot0.kA = 0.1;
@@ -46,7 +54,7 @@ public class Wrist extends SubsystemBase {
     configurationWrist.MotionMagic.MotionMagicAcceleration = 3;
 
     motorWrist.getConfigurator().apply(configurationWrist);
-    motorWrist.setPosition(0);
+    motorWrist.setPosition(MECH_STOP_OFFSET);
   }
 
   public Command cmdWristToDeg(double targetDegrees){
