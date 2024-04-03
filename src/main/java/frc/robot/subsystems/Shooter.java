@@ -15,7 +15,7 @@ public class Shooter extends SubsystemBase {
   public static final int MOTOR_ID_SHOOTER_2 = 18;
 
   public static final double SHOOTER_IN_RPM = -4000;
-  public static final double SHOOTER_OUT_RPM = 6000;
+  public static final double SHOOTER_OUT_RPM = 7000;
   public static final double SHOOTER_PRESPIN_RPM = 2000;
   public static final double SHOOTER_TEST_OUT = 0.05;
 
@@ -35,9 +35,9 @@ public class Shooter extends SubsystemBase {
 
     configurationShooter.Slot0.kS = 0.05;
     configurationShooter.Slot0.kV = 0.12;
-    configurationShooter.Slot0.kP = 5;
+    configurationShooter.Slot0.kP = 1;
     configurationShooter.Slot0.kI = 0.0;
-    configurationShooter.Slot0.kD = 0.2;
+    configurationShooter.Slot0.kD = 0;
 
     motorShooter1.getConfigurator().apply(configurationShooter);
     motorShooter2.getConfigurator().apply(configurationShooter);

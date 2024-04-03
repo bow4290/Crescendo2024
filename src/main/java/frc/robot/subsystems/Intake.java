@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase {
   public static final double INTAKE_IN_SPEED = 0.5;
   public static final double INTAKE_INDEX_SPEED = 0.4;
   public static final double INTAKE_INDEX_BACK_SPEED = -0.15;
-  public static final double INTAKE_DROP_SPEED = -0.6;
+  public static final double INTAKE_DROP_SPEED = -0.4;
 
   private TalonFX motorIntake = new TalonFX(MOTOR_ID_INTAKE);
   private DigitalInput indexer1 = new DigitalInput(INDEXER_ID_1);
@@ -67,6 +67,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("Have Note? (Is Note Indexed)", isNoteIndexed());
     SmartDashboard.putNumber("Current Intake Output", motorIntake.get());
   }
 
