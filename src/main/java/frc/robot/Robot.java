@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,8 +38,12 @@ public class Robot extends TimedRobot {
 
     UsbCamera driveCamera = CameraServer.startAutomaticCapture();
 
-    driveCamera.setVideoMode(PixelFormat.kMJPEG, 176, 144, 30);
-    driveCamera.setExposureManual(50);
+    try {
+      driveCamera.setVideoMode(PixelFormat.kMJPEG, 176, 144, 30);
+      driveCamera.setExposureManual(50);
+    } catch (VideoException err) {
+      System.err.println(err);
+    }
   }
 
   /**

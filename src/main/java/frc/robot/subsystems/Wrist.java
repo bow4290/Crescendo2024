@@ -79,6 +79,7 @@ public class Wrist extends SubsystemBase {
   public void periodic(){
     SmartDashboard.putNumber("Wrist Rotations (With GR)", motorWrist.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Wrist Rotations (Raw)", motorWrist.getRotorPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Wrist Deg (Horizontal Zero)", motorWrist.getPosition().getValueAsDouble() * 360);
   }
 
 
