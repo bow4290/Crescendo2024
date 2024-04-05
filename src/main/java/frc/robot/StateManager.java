@@ -16,7 +16,7 @@ public class StateManager {
   public enum BotState {
     STASH(0, 111),
     INTAKE(0, -23),
-    SPEAKER_BASE(0, 30),
+    SPEAKER_BASE(0, 32),
     AMP(0, 95),
     SPEAKER_AIMING(0, 0),
     INBETWEEN(0, 0);

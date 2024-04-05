@@ -22,7 +22,7 @@ public class Wrist extends SubsystemBase {
   // Wrist zero is set to be more horizontal so that gravity feedforward works, making this the mech stop offset
   public static final double MECH_STOP_OFFSET = 0.309;
 
-  public static final double TOLERANCE = 0.15; 
+  public static final double TOLERANCE = 0.05; 
 
   final TalonFX motorWrist = new TalonFX(MOTOR_ID_WRIST);
 
@@ -42,13 +42,13 @@ public class Wrist extends SubsystemBase {
 
     // TODO: Tune these values (all)
     configurationWrist.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    configurationWrist.Slot0.kG = 1;
+    configurationWrist.Slot0.kG = 0.95;
     configurationWrist.Slot0.kS = 1.8;
     configurationWrist.Slot0.kV = 0.12;
     configurationWrist.Slot0.kA = 0.1;
     configurationWrist.Slot0.kP = 20;
     configurationWrist.Slot0.kI = 0;
-    configurationWrist.Slot0.kD = 4;
+    configurationWrist.Slot0.kD = 4.5;
 
     configurationWrist.MotionMagic.MotionMagicCruiseVelocity = 1;
     configurationWrist.MotionMagic.MotionMagicAcceleration = 3;

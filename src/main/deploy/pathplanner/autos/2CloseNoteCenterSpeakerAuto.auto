@@ -75,7 +75,19 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "State Stash"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "State Speaker"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.25
                 }
               },
               {
@@ -90,6 +102,6 @@
       ]
     }
   },
-  "folder": "CenterSpeakerAutos",
+  "folder": null,
   "choreoAuto": false
 }

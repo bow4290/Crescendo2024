@@ -83,7 +83,7 @@ public class Controls {
   public static Command autoShootOut(RobotContainer botInstance){
     return Commands.parallel(
       botInstance.shooter.cmdShootOut(),
-      Commands.waitUntil(() -> botInstance.shooter.isShooterSpeed(Shooter.SHOOTER_OUT_RPM)).withTimeout(2.25).andThen(botInstance.intake.cmdIntakeIn())
+      Commands.waitUntil(() -> botInstance.shooter.isShooterSpeed(Shooter.SHOOTER_TOP_OUT_RPM)).withTimeout(0.5).andThen(botInstance.intake.cmdIntakeIn())
     );
   }
 
