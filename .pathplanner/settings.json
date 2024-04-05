@@ -3,9 +3,14 @@
   "robotLength": 0.76,
   "holonomicMode": true,
   "pathFolders": [
-    "SrcSubwoofer 2 Note Leave (Note3)"
+    "AmpSpeakerPaths",
+    "CenterSpeakerPaths",
+    "HPSpeakerPaths"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "AmpSpeakerAutos",
+    "CenterSpeakerAutos"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
